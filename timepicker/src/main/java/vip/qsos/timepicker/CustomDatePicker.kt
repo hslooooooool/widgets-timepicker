@@ -17,21 +17,22 @@ import java.util.*
 
 /**
  * @author 华清松
- * @doc 类说明：时间选择控件,构建时间选择窗口
+ *
+ * 时间选择控件,构建时间选择窗口
  * @param startDate 最小可选时间
  * @param endDate   最大可选时间
  */
 class CustomDatePicker(
-        context: Context,
-        private val sdf: SimpleDateFormat,
-        startDate: String,
-        endDate: String,
-        resultHandler: OnDateListener
+    context: Context,
+    private val sdf: SimpleDateFormat,
+    startDate: String,
+    endDate: String,
+    resultHandler: OnDateListener
 ) {
 
     private var selectState = false
 
-    private var scrollUnits = SCROLL_TYPE.HOUR.value + SCROLL_TYPE.MINUTE.value
+    private var scrollUnits = ScrollType.HOUR.value + ScrollType.MINUTE.value
     private var canAccess = false
     private var startYear: Int = 0
     private var startMonth: Int = 0
@@ -52,8 +53,7 @@ class CustomDatePicker(
 
     private var handler: OnDateListener? = null
     private var context: Context? = null
-    var dialog: Dialog? = null
-        private set
+    private var dialog: Dialog? = null
 
     private var yearPv: DatePickerView? = null
     private var monthPv: DatePickerView? = null
@@ -69,15 +69,15 @@ class CustomDatePicker(
     private var selectedCalender = Calendar.getInstance()
     private var startCalendar = Calendar.getInstance()
     private var endCalendar = Calendar.getInstance()
-    private var tv_cancel: TextView? = null
-    private var tv_select: TextView? = null
-    private var day_tv: TextView? = null
-    private var hour_text: TextView? = null
-    private var minute_text: TextView? = null
+    private var tvCancel: TextView? = null
+    private var tvSelect: TextView? = null
+    private var tvDay: TextView? = null
+    private var tvHour: TextView? = null
+    private var tvMinute: TextView? = null
     private var secondStartCalender = Calendar.getInstance()
     private var secondEndCalender = Calendar.getInstance()
 
-    private enum class SCROLL_TYPE constructor(var value: Int) {
+    private enum class ScrollType constructor(var value: Int) {
         HOUR(1),
         MINUTE(2)
     }
@@ -88,10 +88,10 @@ class CustomDatePicker(
             this.context = context
             this.handler = resultHandler
             try {
-                startCalendar!!.time = sdf.parse(startDate)
-                endCalendar!!.time = sdf.parse(endDate)
-                secondStartCalender!!.time = sdf.parse(startDate)
-                secondEndCalender!!.time = sdf.parse(endDate)
+                startCalendar.time = sdf.parse(startDate)!!
+                endCalendar.time = sdf.parse(endDate)!!
+                secondStartCalender.time = sdf.parse(startDate)!!
+                secondEndCalender.time = sdf.parse(endDate)!!
             } catch (e: ParseException) {
                 e.printStackTrace()
             }
@@ -122,20 +122,20 @@ class CustomDatePicker(
         yearPv = dialog!!.findViewById(R.id.year_pv)
         monthPv = dialog!!.findViewById(R.id.month_pv)
         dayPv = dialog!!.findViewById(R.id.day_pv)
-        day_tv = dialog!!.findViewById(R.id.day_tv)
+        tvDay = dialog!!.findViewById(R.id.day_tv)
         hourPv = dialog!!.findViewById(R.id.hour_pv)
         minutePv = dialog!!.findViewById(R.id.minute_pv)
-        tv_cancel = dialog!!.findViewById(R.id.tv_cancel)
-        tv_select = dialog!!.findViewById(R.id.tv_select)
-        hour_text = dialog!!.findViewById(R.id.hour_text)
-        minute_text = dialog!!.findViewById(R.id.minute_text)
+        tvCancel = dialog!!.findViewById(R.id.tv_cancel)
+        tvSelect = dialog!!.findViewById(R.id.tv_select)
+        tvHour = dialog!!.findViewById(R.id.hour_text)
+        tvMinute = dialog!!.findViewById(R.id.minute_text)
 
-        tv_cancel!!.setOnClickListener {
+        tvCancel!!.setOnClickListener {
             selectState = false
             dialog!!.dismiss()
         }
 
-        tv_select!!.setOnClickListener {
+        tvSelect!!.setOnClickListener {
             selectState = true
             dialog!!.dismiss()
         }
@@ -149,7 +149,10 @@ class CustomDatePicker(
         }
     }
 
-    private fun initParameter(calendar1: Calendar = startCalendar, calendar2: Calendar = endCalendar) {
+    private fun initParameter(
+        calendar1: Calendar = startCalendar,
+        calendar2: Calendar = endCalendar
+    ) {
 
         startYear = calendar1.get(Calendar.YEAR)
         startMonth = calendar1.get(Calendar.MONTH) + 1
@@ -168,7 +171,7 @@ class CustomDatePicker(
         spanHour = !spanDay && startHour != endHour
         spanMin = !spanHour && startMinute != endMinute
 
-        selectedCalender!!.time = calendar1.time
+        selectedCalender.time = calendar1.time
     }
 
     private fun initTimer(calendar: Calendar? = startCalendar) {
@@ -184,7 +187,7 @@ class CustomDatePicker(
                 day!!.add(formatTimeUnit(i))
             }
 
-            if (scrollUnits and SCROLL_TYPE.HOUR.value != SCROLL_TYPE.HOUR.value) {
+            if (scrollUnits and ScrollType.HOUR.value != ScrollType.HOUR.value) {
                 hour!!.add(formatTimeUnit(startHour))
             } else {
                 for (i in startHour..MAX_HOUR) {
@@ -192,7 +195,7 @@ class CustomDatePicker(
                 }
             }
 
-            if (scrollUnits and SCROLL_TYPE.MINUTE.value != SCROLL_TYPE.MINUTE.value) {
+            if (scrollUnits and ScrollType.MINUTE.value != ScrollType.MINUTE.value) {
                 minute!!.add(formatTimeUnit(startMinute))
             } else {
                 for (i in startMinute..MAX_MINUTE) {
@@ -208,7 +211,7 @@ class CustomDatePicker(
                 day!!.add(formatTimeUnit(i))
             }
 
-            if (scrollUnits and SCROLL_TYPE.HOUR.value != SCROLL_TYPE.HOUR.value) {
+            if (scrollUnits and ScrollType.HOUR.value != ScrollType.HOUR.value) {
                 hour!!.add(formatTimeUnit(startHour))
             } else {
                 for (i in startHour..MAX_HOUR) {
@@ -216,7 +219,7 @@ class CustomDatePicker(
                 }
             }
 
-            if (scrollUnits and SCROLL_TYPE.MINUTE.value != SCROLL_TYPE.MINUTE.value) {
+            if (scrollUnits and ScrollType.MINUTE.value != ScrollType.MINUTE.value) {
                 minute!!.add(formatTimeUnit(startMinute))
             } else {
                 for (i in startMinute..MAX_MINUTE) {
@@ -230,7 +233,7 @@ class CustomDatePicker(
                 day!!.add(formatTimeUnit(i))
             }
 
-            if (scrollUnits and SCROLL_TYPE.HOUR.value != SCROLL_TYPE.HOUR.value) {
+            if (scrollUnits and ScrollType.HOUR.value != ScrollType.HOUR.value) {
                 hour!!.add(formatTimeUnit(startHour))
             } else {
                 for (i in startHour..MAX_HOUR) {
@@ -238,7 +241,7 @@ class CustomDatePicker(
                 }
             }
 
-            if (scrollUnits and SCROLL_TYPE.MINUTE.value != SCROLL_TYPE.MINUTE.value) {
+            if (scrollUnits and ScrollType.MINUTE.value != ScrollType.MINUTE.value) {
                 minute!!.add(formatTimeUnit(startMinute))
             } else {
                 for (i in startMinute..MAX_MINUTE) {
@@ -249,7 +252,7 @@ class CustomDatePicker(
             year!!.add(startYear.toString())
             month!!.add(formatTimeUnit(startMonth))
             day!!.add(formatTimeUnit(startDay))
-            if (scrollUnits and SCROLL_TYPE.HOUR.value != SCROLL_TYPE.HOUR.value) {
+            if (scrollUnits and ScrollType.HOUR.value != ScrollType.HOUR.value) {
                 hour!!.add(formatTimeUnit(startHour))
             } else {
                 for (i in startHour..endHour) {
@@ -257,7 +260,7 @@ class CustomDatePicker(
                 }
             }
 
-            if (scrollUnits and SCROLL_TYPE.MINUTE.value != SCROLL_TYPE.MINUTE.value) {
+            if (scrollUnits and ScrollType.MINUTE.value != ScrollType.MINUTE.value) {
                 minute!!.add(formatTimeUnit(startMinute))
             } else {
                 for (i in startMinute..MAX_MINUTE) {
@@ -270,7 +273,7 @@ class CustomDatePicker(
             day!!.add(formatTimeUnit(startDay))
             hour!!.add(formatTimeUnit(startHour))
 
-            if (scrollUnits and SCROLL_TYPE.MINUTE.value != SCROLL_TYPE.MINUTE.value) {
+            if (scrollUnits and ScrollType.MINUTE.value != ScrollType.MINUTE.value) {
                 minute!!.add(formatTimeUnit(startMinute))
             } else {
                 for (i in startMinute..endMinute) {
@@ -328,46 +331,46 @@ class CustomDatePicker(
     private fun addListener() {
         yearPv!!.setOnSelectListener(object : DatePickerView.OnSelectListener {
             override fun onSelect(text: String) {
-                selectedCalender!!.set(Calendar.YEAR, Integer.parseInt(text))
+                selectedCalender.set(Calendar.YEAR, Integer.parseInt(text))
                 monthChange()
             }
         })
 
         monthPv!!.setOnSelectListener(object : DatePickerView.OnSelectListener {
             override fun onSelect(text: String) {
-                selectedCalender!!.set(Calendar.DAY_OF_MONTH, 1)
-                selectedCalender!!.set(Calendar.MONTH, Integer.parseInt(text) - 1)
+                selectedCalender.set(Calendar.DAY_OF_MONTH, 1)
+                selectedCalender.set(Calendar.MONTH, Integer.parseInt(text) - 1)
                 dayChange()
             }
         })
 
         dayPv!!.setOnSelectListener(
-                object : DatePickerView.OnSelectListener {
-                    override fun onSelect(text: String) {
-                        selectedCalender!!.set(Calendar.DAY_OF_MONTH, Integer.parseInt(text))
-                        hourChange()
-                    }
-                })
+            object : DatePickerView.OnSelectListener {
+                override fun onSelect(text: String) {
+                    selectedCalender.set(Calendar.DAY_OF_MONTH, Integer.parseInt(text))
+                    hourChange()
+                }
+            })
 
         hourPv!!.setOnSelectListener(
-                object : DatePickerView.OnSelectListener {
-                    override fun onSelect(text: String) {
-                        selectedCalender!!.set(Calendar.HOUR_OF_DAY, Integer.parseInt(text))
-                        minuteChange()
-                    }
-                })
+            object : DatePickerView.OnSelectListener {
+                override fun onSelect(text: String) {
+                    selectedCalender.set(Calendar.HOUR_OF_DAY, Integer.parseInt(text))
+                    minuteChange()
+                }
+            })
 
         minutePv!!.setOnSelectListener(
-                object : DatePickerView.OnSelectListener {
-                    override fun onSelect(text: String) {
-                        selectedCalender!!.set(Calendar.MINUTE, Integer.parseInt(text))
-                    }
-                })
+            object : DatePickerView.OnSelectListener {
+                override fun onSelect(text: String) {
+                    selectedCalender.set(Calendar.MINUTE, Integer.parseInt(text))
+                }
+            })
     }
 
     private fun monthChange() {
         month!!.clear()
-        when (selectedCalender!!.get(Calendar.YEAR)) {
+        when (selectedCalender.get(Calendar.YEAR)) {
             startYear -> for (i in startMonth..MAX_MONTH) {
                 month!!.add(formatTimeUnit(i))
             }
@@ -378,7 +381,7 @@ class CustomDatePicker(
                 month!!.add(formatTimeUnit(i))
             }
         }
-        selectedCalender!!.set(Calendar.MONTH, Integer.parseInt(month!![0]) - 1)
+        selectedCalender.set(Calendar.MONTH, Integer.parseInt(month!![0]) - 1)
         monthPv!!.setData(month!!)
         monthPv!!.setSelected(0)
         executeAnimator(monthPv)
@@ -388,10 +391,10 @@ class CustomDatePicker(
 
     private fun dayChange() {
         day!!.clear()
-        val selectedYear = selectedCalender!!.get(Calendar.YEAR)
-        val selectedMonth = selectedCalender!!.get(Calendar.MONTH) + 1
+        val selectedYear = selectedCalender.get(Calendar.YEAR)
+        val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
         if (selectedYear == startYear && selectedMonth == startMonth) {
-            for (i in startDay..selectedCalender!!.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+            for (i in startDay..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
                 day!!.add(formatTimeUnit(i))
             }
         } else if (selectedYear == endYear && selectedMonth == endMonth) {
@@ -399,11 +402,11 @@ class CustomDatePicker(
                 day!!.add(formatTimeUnit(i))
             }
         } else {
-            for (i in 1..selectedCalender!!.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+            for (i in 1..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
                 day!!.add(formatTimeUnit(i))
             }
         }
-        selectedCalender!!.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day!![0]))
+        selectedCalender.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day!![0]))
         dayPv!!.setData(day!!)
         dayPv!!.setSelected(0)
         executeAnimator(dayPv)
@@ -412,11 +415,11 @@ class CustomDatePicker(
     }
 
     private fun hourChange() {
-        if (scrollUnits and SCROLL_TYPE.HOUR.value == SCROLL_TYPE.HOUR.value) {
+        if (scrollUnits and ScrollType.HOUR.value == ScrollType.HOUR.value) {
             hour!!.clear()
-            val selectedYear = selectedCalender!!.get(Calendar.YEAR)
-            val selectedMonth = selectedCalender!!.get(Calendar.MONTH) + 1
-            val selectedDay = selectedCalender!!.get(Calendar.DAY_OF_MONTH)
+            val selectedYear = selectedCalender.get(Calendar.YEAR)
+            val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
+            val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
             if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay) {
                 for (i in startHour..MAX_HOUR) {
                     hour!!.add(formatTimeUnit(i))
@@ -430,7 +433,7 @@ class CustomDatePicker(
                     hour!!.add(formatTimeUnit(i))
                 }
             }
-            selectedCalender!!.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour!![0]))
+            selectedCalender.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour!![0]))
             hourPv!!.setData(hour!!)
             hourPv!!.setSelected(0)
             executeAnimator(hourPv)
@@ -440,12 +443,12 @@ class CustomDatePicker(
     }
 
     private fun minuteChange() {
-        if (scrollUnits and SCROLL_TYPE.MINUTE.value == SCROLL_TYPE.MINUTE.value) {
+        if (scrollUnits and ScrollType.MINUTE.value == ScrollType.MINUTE.value) {
             minute!!.clear()
-            val selectedYear = selectedCalender!!.get(Calendar.YEAR)
-            val selectedMonth = selectedCalender!!.get(Calendar.MONTH) + 1
-            val selectedDay = selectedCalender!!.get(Calendar.DAY_OF_MONTH)
-            val selectedHour = selectedCalender!!.get(Calendar.HOUR_OF_DAY)
+            val selectedYear = selectedCalender.get(Calendar.YEAR)
+            val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
+            val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
+            val selectedHour = selectedCalender.get(Calendar.HOUR_OF_DAY)
             if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay && selectedHour == startHour) {
                 for (i in startMinute..MAX_MINUTE) {
                     minute!!.add(formatTimeUnit(i))
@@ -459,7 +462,7 @@ class CustomDatePicker(
                     minute!!.add(formatTimeUnit(i))
                 }
             }
-            selectedCalender!!.set(Calendar.MINUTE, Integer.parseInt(minute!![0]))
+            selectedCalender.set(Calendar.MINUTE, Integer.parseInt(minute!![0]))
             minutePv!!.setData(minute!!)
             minutePv!!.setSelected(0)
             executeAnimator(minutePv)
@@ -478,15 +481,15 @@ class CustomDatePicker(
         yearPv!!.setCanScroll(year!!.size > 1)
         monthPv!!.setCanScroll(month!!.size > 1)
         dayPv!!.setCanScroll(day!!.size > 1)
-        hourPv!!.setCanScroll(hour!!.size > 1 && scrollUnits and SCROLL_TYPE.HOUR.value == SCROLL_TYPE.HOUR.value)
-        minutePv!!.setCanScroll(minute!!.size > 1 && scrollUnits and SCROLL_TYPE.MINUTE.value == SCROLL_TYPE.MINUTE.value)
+        hourPv!!.setCanScroll(hour!!.size > 1 && scrollUnits and ScrollType.HOUR.value == ScrollType.HOUR.value)
+        minutePv!!.setCanScroll(minute!!.size > 1 && scrollUnits and ScrollType.MINUTE.value == ScrollType.MINUTE.value)
     }
 
-    private fun disScrollUnit(vararg scroll_types: SCROLL_TYPE): Int {
-        if (scroll_types.isEmpty()) {
-            scrollUnits = SCROLL_TYPE.HOUR.value + SCROLL_TYPE.MINUTE.value
+    private fun disScrollUnit(vararg scrollTypes: ScrollType): Int {
+        if (scrollTypes.isEmpty()) {
+            scrollUnits = ScrollType.HOUR.value + ScrollType.MINUTE.value
         } else {
-            for (scroll_type in scroll_types) {
+            for (scroll_type in scrollTypes) {
                 scrollUnits = scrollUnits xor scroll_type.value
             }
         }
@@ -497,12 +500,12 @@ class CustomDatePicker(
         if (canAccess) {
             if (isValidDate(time)) {
                 /*判断时间*/
-                if (startCalendar!!.time.time < endCalendar!!.time.time) {
+                if (startCalendar.time.time < endCalendar.time.time) {
                     canAccess = true
                     if (isStartTime) {
                         initParameter()
                     } else {
-                        initParameter(secondStartCalender!!, secondEndCalender!!)
+                        initParameter(secondStartCalender, secondEndCalender)
                     }
                     initTimer()
                     addListener()
@@ -523,18 +526,18 @@ class CustomDatePicker(
             if (show) {
                 disScrollUnit()
                 hourPv!!.visibility = View.VISIBLE
-                hour_text!!.visibility = View.VISIBLE
+                tvHour!!.visibility = View.VISIBLE
                 minutePv!!.visibility = View.VISIBLE
-                minute_text!!.visibility = View.VISIBLE
+                tvMinute!!.visibility = View.VISIBLE
             } else {
                 disScrollUnit(
-                    SCROLL_TYPE.HOUR,
-                    SCROLL_TYPE.MINUTE
+                    ScrollType.HOUR,
+                    ScrollType.MINUTE
                 )
                 hourPv!!.visibility = View.GONE
-                hour_text!!.visibility = View.GONE
+                tvHour!!.visibility = View.GONE
                 minutePv!!.visibility = View.GONE
-                minute_text!!.visibility = View.GONE
+                tvMinute!!.visibility = View.GONE
             }
         }
     }
@@ -547,15 +550,15 @@ class CustomDatePicker(
             if (showDay) {
                 disScrollUnit()
                 dayPv!!.visibility = View.VISIBLE
-                day_tv!!.visibility = View.VISIBLE
+                tvDay!!.visibility = View.VISIBLE
                 showSpecificTime(showSpecific)
             } else {
                 disScrollUnit(
-                    SCROLL_TYPE.HOUR,
-                    SCROLL_TYPE.MINUTE
+                    ScrollType.HOUR,
+                    ScrollType.MINUTE
                 )
                 dayPv!!.visibility = View.GONE
-                day_tv!!.visibility = View.GONE
+                tvDay!!.visibility = View.GONE
                 showSpecificTime(false)
             }
         }
@@ -583,10 +586,10 @@ class CustomDatePicker(
             val dateStr = str[0].split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
             yearPv!!.setSelected(dateStr[0])
-            selectedCalender!!.set(Calendar.YEAR, Integer.parseInt(dateStr[0]))
+            selectedCalender.set(Calendar.YEAR, Integer.parseInt(dateStr[0]))
 
             month!!.clear()
-            val selectedYear = selectedCalender!!.get(Calendar.YEAR)
+            val selectedYear = selectedCalender.get(Calendar.YEAR)
             if (startYear == endYear) {
                 for (i in startMonth..endMonth) {
                     month!!.add(formatTimeUnit(i))
@@ -606,18 +609,18 @@ class CustomDatePicker(
             }
             monthPv!!.setData(month!!)
             monthPv!!.setSelected(dateStr[1])
-            selectedCalender!!.set(Calendar.MONTH, Integer.parseInt(dateStr[1]) - 1)
+            selectedCalender.set(Calendar.MONTH, Integer.parseInt(dateStr[1]) - 1)
             executeAnimator(monthPv)
 
             day!!.clear()
-            val selectedMonth = selectedCalender!!.get(Calendar.MONTH) + 1
+            val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
             if (startYear == endYear && startMonth == endMonth) {
                 for (i in startDay..endDay) {
                     day!!.add(formatTimeUnit(i))
                 }
             } else {
                 if (selectedYear == startYear && selectedMonth == startMonth) {
-                    for (i in startDay..selectedCalender!!.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                    for (i in startDay..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
                         day!!.add(formatTimeUnit(i))
                     }
                 } else if (selectedYear == endYear && selectedMonth == endMonth) {
@@ -625,22 +628,23 @@ class CustomDatePicker(
                         day!!.add(formatTimeUnit(i))
                     }
                 } else {
-                    for (i in 1..selectedCalender!!.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                    for (i in 1..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
                         day!!.add(formatTimeUnit(i))
                     }
                 }
             }
             dayPv!!.setData(day!!)
             dayPv!!.setSelected(dateStr[2])
-            selectedCalender!!.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateStr[2]))
+            selectedCalender.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateStr[2]))
             executeAnimator(dayPv)
 
             if (str.size == 2) {
-                val timeStr = str[1].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                val timeStr =
+                    str[1].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-                if (scrollUnits and SCROLL_TYPE.HOUR.value == SCROLL_TYPE.HOUR.value) {
+                if (scrollUnits and ScrollType.HOUR.value == ScrollType.HOUR.value) {
                     hour!!.clear()
-                    val selectedDay = selectedCalender!!.get(Calendar.DAY_OF_MONTH)
+                    val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
                     if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay) {
                         for (i in startHour..MAX_HOUR) {
                             hour!!.add(formatTimeUnit(i))
@@ -656,14 +660,14 @@ class CustomDatePicker(
                     }
                     hourPv!!.setData(hour!!)
                     hourPv!!.setSelected(timeStr[0])
-                    selectedCalender!!.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeStr[0]))
+                    selectedCalender.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeStr[0]))
                     executeAnimator(hourPv)
                 }
 
-                if (scrollUnits and SCROLL_TYPE.MINUTE.value == SCROLL_TYPE.MINUTE.value) {
+                if (scrollUnits and ScrollType.MINUTE.value == ScrollType.MINUTE.value) {
                     minute!!.clear()
-                    val selectedDay = selectedCalender!!.get(Calendar.DAY_OF_MONTH)
-                    val selectedHour = selectedCalender!!.get(Calendar.HOUR_OF_DAY)
+                    val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
+                    val selectedHour = selectedCalender.get(Calendar.HOUR_OF_DAY)
                     if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay && selectedHour == startHour) {
                         for (i in startMinute..MAX_MINUTE) {
                             minute!!.add(formatTimeUnit(i))
@@ -679,7 +683,7 @@ class CustomDatePicker(
                     }
                     minutePv!!.setData(minute!!)
                     minutePv!!.setSelected(timeStr[1])
-                    selectedCalender!!.set(Calendar.MINUTE, Integer.parseInt(timeStr[1]))
+                    selectedCalender.set(Calendar.MINUTE, Integer.parseInt(timeStr[1]))
                     executeAnimator(minutePv)
                 }
             }

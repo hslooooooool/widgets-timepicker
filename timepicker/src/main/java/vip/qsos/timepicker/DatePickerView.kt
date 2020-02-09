@@ -14,10 +14,12 @@ import android.view.MotionEvent
 import android.view.View
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.pow
 
 /**
  * @author 华清松
- * @doc 类说明：时间滚轮样式视图
+ *
+ * 时间滚轮样式视图
  */
 class DatePickerView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     /**新增字段 控制是否首尾相接循环显示 默认为循环显示*/
@@ -55,7 +57,7 @@ class DatePickerView(context: Context, attrs: AttributeSet) : View(context, attr
                 }
             } else {
                 // 这里mMoveLen / Math.abs(mMoveLen)是为了保有mMoveLen的正负号，以实现上滚或下滚
-                mMoveLen -= mMoveLen / Math.abs(mMoveLen) * SPEED
+                mMoveLen -= mMoveLen / abs(mMoveLen) * SPEED
             }
             invalidate()
         }
@@ -215,8 +217,10 @@ class DatePickerView(context: Context, attrs: AttributeSet) : View(context, attr
         val y = (mViewHeight / 2.0 + type * d).toFloat()
         val fmi = nPaint!!.fontMetricsInt
         val baseline = (y - (fmi.bottom / 2.0 + fmi.top / 2.0)).toFloat()
-        canvas.drawText(mDataList!![mCurrentSelected + type * position],
-                (mViewWidth / 2.0).toFloat(), baseline, nPaint!!)
+        canvas.drawText(
+            mDataList!![mCurrentSelected + type * position],
+            (mViewWidth / 2.0).toFloat(), baseline, nPaint!!
+        )
     }
 
     /**
@@ -226,7 +230,7 @@ class DatePickerView(context: Context, attrs: AttributeSet) : View(context, attr
      * @param x    偏移量
      */
     private fun parabola(zero: Float, x: Float): Float {
-        val f = (1 - Math.pow((x / zero).toDouble(), 2.0)).toFloat()
+        val f = (1 - (x / zero).toDouble().pow(2.0)).toFloat()
         return if (f < 0F) 0F else f
     }
 
@@ -282,7 +286,7 @@ class DatePickerView(context: Context, attrs: AttributeSet) : View(context, attr
     private fun doUp() {
 
         // 抬起手后mCurrentSelected的位置由当前位置move到中间选中位置
-        if (Math.abs(mMoveLen) < 0.0001) {
+        if (abs(mMoveLen) < 0.0001) {
             mMoveLen = 0f
             return
         }
@@ -314,21 +318,16 @@ class DatePickerView(context: Context, attrs: AttributeSet) : View(context, attr
         loop = isLoop
     }
 
-    internal inner class MyTimerTask(var handler: Handler) : TimerTask() {
-
+    internal inner class MyTimerTask(private var handler: Handler) : TimerTask() {
         override fun run() {
             handler.sendMessage(handler.obtainMessage())
         }
     }
 
     companion object {
-        /**
-         * text之间间距和minTextSize之比
-         */
-        val MARGIN_ALPHA = 2.8f
-        /**
-         * 自动回滚到中间的速度
-         */
-        val SPEED = 10f
+        /** Text 之间间距和 MinTextSize 之比*/
+        const val MARGIN_ALPHA = 2.8f
+        /**自动回滚到中间的速度*/
+        const val SPEED = 10f
     }
 }
