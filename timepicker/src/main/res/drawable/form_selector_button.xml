@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+	
+	<!-- Button正常状态下的背景 -->
+	<item android:state_pressed="false">
+		<shape android:shape="rectangle">
+			<size android:width="20dp" android:height="10dp" />
+			<!-- 矩形的填充色 -->
+			<solid android:color="@android:color/primary_text_dark" />
+		</shape>
+	</item>
+	
+	<!-- Button按下时的背景 -->
+	<item android:state_pressed="true">
+		<shape android:shape="rectangle">
+			<solid android:color="@android:color/primary_text_dark_nodisable" />
+			<size android:width="20dp" android:height="10dp" />
+		</shape>
+	</item>
+</selector>

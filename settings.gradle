@@ -1,0 +1,3 @@
+rootProject.name = 'qsos-timepicker'
+
+include ':app', ':timepicker'

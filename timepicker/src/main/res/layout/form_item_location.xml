@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginBottom="10dp"
+	android:background="@android:color/white"
+	android:gravity="center_vertical"
+	android:orientation="vertical">
+	
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="60dp"
+		android:orientation="horizontal">
+		
+		<include layout="@layout/form_normal_title" />
+		
+		<TextView
+			android:id="@+id/item_form_location"
+			android:layout_width="match_parent"
+			android:layout_height="60dp"
+			android:drawableEnd="@drawable/form_drawable_right"
+			android:ellipsize="end"
+			android:gravity="center_vertical|end"
+			android:maxLines="1"
+			android:paddingStart="50dp"
+			android:paddingLeft="50dp"
+			android:textColor="#505050"
+			android:textSize="18sp"
+			tools:text="请设置位置" />
+	</LinearLayout>
+	
+	<LinearLayout
+		android:id="@+id/item_form_location_expand"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical" />
+</LinearLayout>

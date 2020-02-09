@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:focusable="true"
+	android:focusableInTouchMode="true"
+	android:orientation="vertical">
+	
+	<EditText
+		android:id="@+id/et_form_input"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="20dp"
+		android:background="@drawable/form_line_card_radio_gray_radio"
+		android:gravity="start"
+		android:inputType="textMultiLine"
+		android:minHeight="300dp"
+		android:padding="10dp"
+		android:textSize="20sp" />
+	
+	<TextView
+		android:id="@+id/tv_form_input_hint"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_margin="20dp"
+		android:layout_weight="1"
+		android:gravity="end"
+		android:textSize="16sp"
+		tools:text="备注:请输入文字，字数限制5-500字" />
+	
+	<Button
+		android:id="@+id/btn_form_input_btn"
+		style="@style/FormMainButtonStyle" />
+</LinearLayout>

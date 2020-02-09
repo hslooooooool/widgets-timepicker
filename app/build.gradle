@@ -1,0 +1,13 @@
+apply plugin: 'com.android.application'
+
+apply from: '../base.gradle'
+
+android {
+    defaultConfig {
+        applicationId "vip.qsos.timepicker"
+    }
+}
+
+dependencies {
+    implementation project(':timepicker')
+}

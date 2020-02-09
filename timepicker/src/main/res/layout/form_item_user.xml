@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginBottom="10dp"
+	android:orientation="vertical">
+	
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="60dp"
+		android:background="@android:color/white"
+		android:orientation="horizontal">
+		
+		<include layout="@layout/form_normal_title" />
+		
+		<TextView
+			android:id="@+id/item_form_users_size"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:drawableEnd="@drawable/form_drawable_right"
+			android:ellipsize="end"
+			android:gravity="center_vertical|end"
+			android:maxLines="1"
+			android:textSize="18sp" />
+	
+	</LinearLayout>
+	
+	<androidx.recyclerview.widget.RecyclerView
+		android:id="@+id/item_form_users_rv"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="10dp"
+		android:background="@android:color/white"
+		android:minHeight="100dp"
+		android:padding="12sp"
+		tools:ignore="UnusedAttribute"
+		tools:listitem="@layout/form_item_user_item" />
+
+</LinearLayout>

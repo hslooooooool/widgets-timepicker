@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--限制最大高度的列表-->
+    <declare-styleable name="FormMaxHeightRecyclerView">
+        <attr name="formMaxHeight" type="dimension" />
+    </declare-styleable>
+</resources>

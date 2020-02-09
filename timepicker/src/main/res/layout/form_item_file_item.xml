@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:gravity="center"
+	android:orientation="vertical"
+	android:padding="4dp">
+	
+	<RelativeLayout
+		android:layout_width="50dp"
+		android:layout_height="50dp">
+		
+		<ImageView
+			android:id="@+id/iv_item_form_file_icon"
+			android:layout_width="50dp"
+			android:layout_height="50dp"
+			android:layout_margin="5dp"
+			android:background="@android:color/darker_gray"
+			android:scaleType="fitXY" />
+		
+		<ImageView
+			android:id="@+id/iv_item_form_file_delete"
+			android:layout_width="14dp"
+			android:layout_height="14dp"
+			android:layout_alignParentEnd="true"
+			app:srcCompat="@drawable/form_close_red" />
+	</RelativeLayout>
+	
+	<TextView
+		android:id="@+id/tv_item_form_file_name"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:ellipsize="end"
+		android:gravity="center"
+		android:maxLines="1"
+		android:textColor="#505050"
+		android:textSize="12sp"
+		tools:text="文件" />
+</LinearLayout>
