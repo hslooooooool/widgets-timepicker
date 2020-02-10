@@ -1,3 +1,11 @@
 <resources>
 	<string name="form_name">表单组件</string>
+    <string name="timepicker_title">时间选择</string>
+    <string name="timepicker_cancel">取消</string>
+    <string name="timepicker_sure">确认</string>
+    <string name="timepicker_year">年</string>
+    <string name="timepicker_month">月</string>
+    <string name="timepicker_day">日</string>
+    <string name="timepicker_hour">小\n时</string>
+    <string name="timepicker_minute">分</string>
 </resources>

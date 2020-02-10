@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="form_tag">#03A9F4</color>
+    <color name="colorPrimary">#03A9F4</color>
+
+    <color name="timepicker_background">#FFFFFF</color>
 </resources>

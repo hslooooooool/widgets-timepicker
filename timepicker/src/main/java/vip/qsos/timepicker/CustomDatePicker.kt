@@ -10,9 +10,8 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.TextView
+import kotlinx.android.synthetic.main.form_chose_time.*
 import vip.qsos.form_n.R
-import java.text.ParseException
-import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -22,18 +21,49 @@ import java.util.*
  * @param startDate 最小可选时间
  * @param endDate   最大可选时间
  */
-class CustomDatePicker(
-    context: Context,
-    private val sdf: SimpleDateFormat,
-    startDate: String,
-    endDate: String,
-    resultHandler: OnDateListener
+class CustomDatePicker constructor(
+    private val context: Context,
+    private val startDate: Date,
+    private val endDate: Date,
+    private val selectDate: Date,
+    private val loop: Boolean = true,
+    private val showYear: Boolean = true,
+    private val showMonth: Boolean = true,
+    private val showDay: Boolean = true,
+    private val showHour: Boolean = true,
+    private val showMinute: Boolean = true,
+    private val onDateListener: OnDateListener
 ) {
 
-    private var selectState = false
+    companion object {
+        private const val MAX_MONTH = 12
+        private const val MAX_HOUR = 23
+        private const val MAX_MINUTE = 59
 
-    private var scrollUnits = ScrollType.HOUR.value + ScrollType.MINUTE.value
-    private var canAccess = false
+        private const val MIN_MINUTE = 0
+        private const val MIN_HOUR = 0
+    }
+
+    enum class Type(val type: String) {
+        YMDHM("yyyy-MM-dd HH:mm"),
+        YMDH("yyyy-MM-dd HH"),
+        YMD("yyyy-MM-dd"),
+        YM("yyyy-MM"),
+        Y("yyyy"),
+        M("MM"),
+        D("dd"),
+        H("HH"),
+        MDHM("MM-dd HH:mm"),
+        MDH("MM-dd HH"),
+        MD("MM-dd"),
+        DH("dd HH"),
+        DHM("dd HH:mm"),
+        HM("HH:mm");
+    }
+
+    /**是否确认选择*/
+    private var hasSelected = false
+
     private var startYear: Int = 0
     private var startMonth: Int = 0
     private var startDay: Int = 0
@@ -44,676 +74,493 @@ class CustomDatePicker(
     private var endDay: Int = 0
     private var endHour: Int = 0
     private var endMinute: Int = 0
-    private var spanYear: Boolean = false
-    private var spanMon: Boolean = false
-    private var spanDay: Boolean = false
-    private var spanHour: Boolean = false
-    private var spanMin: Boolean = false
-    private var isStartTime = true
 
-    private var handler: OnDateListener? = null
-    private var context: Context? = null
-    private var dialog: Dialog? = null
+    private lateinit var dialog: Dialog
 
-    private var yearPv: DatePickerView? = null
-    private var monthPv: DatePickerView? = null
-    private var dayPv: DatePickerView? = null
-    private var hourPv: DatePickerView? = null
-    private var minutePv: DatePickerView? = null
+    private lateinit var tvCancel: TextView
+    private lateinit var tvSure: TextView
 
-    private var year: ArrayList<String>? = null
-    private var month: ArrayList<String>? = null
-    private var day: ArrayList<String>? = null
-    private var hour: ArrayList<String>? = null
-    private var minute: ArrayList<String>? = null
+    private lateinit var pYear: DatePickerView
+    private lateinit var pMonth: DatePickerView
+    private lateinit var pDay: DatePickerView
+    private lateinit var pHour: DatePickerView
+    private lateinit var pMinute: DatePickerView
+
+    private lateinit var tYear: TextView
+    private lateinit var tMonth: TextView
+    private lateinit var tDay: TextView
+    private lateinit var tHour: TextView
+    private lateinit var tMinute: TextView
+
+    private var listYear: ArrayList<String> = arrayListOf()
+    private var listMonth: ArrayList<String> = arrayListOf()
+    private var listDay: ArrayList<String> = arrayListOf()
+    private var listHour: ArrayList<String> = arrayListOf()
+    private var listMinute: ArrayList<String> = arrayListOf()
+
     private var selectedCalender = Calendar.getInstance()
     private var startCalendar = Calendar.getInstance()
     private var endCalendar = Calendar.getInstance()
-    private var tvCancel: TextView? = null
-    private var tvSelect: TextView? = null
-    private var tvDay: TextView? = null
-    private var tvHour: TextView? = null
-    private var tvMinute: TextView? = null
-    private var secondStartCalender = Calendar.getInstance()
-    private var secondEndCalender = Calendar.getInstance()
-
-    private enum class ScrollType constructor(var value: Int) {
-        HOUR(1),
-        MINUTE(2)
-    }
-
-    init {
-        if (isValidDate(startDate) && isValidDate(endDate)) {
-            canAccess = true
-            this.context = context
-            this.handler = resultHandler
-            try {
-                startCalendar.time = sdf.parse(startDate)!!
-                endCalendar.time = sdf.parse(endDate)!!
-                secondStartCalender.time = sdf.parse(startDate)!!
-                secondEndCalender.time = sdf.parse(endDate)!!
-            } catch (e: ParseException) {
-                e.printStackTrace()
-            }
-
-            initDialog()
-            initView()
-        }
-    }
-
-    private fun initDialog() {
-        if (dialog == null) {
-            dialog = Dialog(context!!, R.style.FormRelativeTimeDialogStyle)
-            dialog!!.setCancelable(true)
-            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog!!.setContentView(R.layout.form_chose_time)
-            val window = dialog!!.window
-            window!!.setGravity(Gravity.BOTTOM)
-            val manager = context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            val dm = DisplayMetrics()
-            manager.defaultDisplay.getMetrics(dm)
-            val lp = window.attributes
-            lp.width = dm.widthPixels
-            window.attributes = lp
-        }
-    }
-
-    private fun initView() {
-        yearPv = dialog!!.findViewById(R.id.year_pv)
-        monthPv = dialog!!.findViewById(R.id.month_pv)
-        dayPv = dialog!!.findViewById(R.id.day_pv)
-        tvDay = dialog!!.findViewById(R.id.day_tv)
-        hourPv = dialog!!.findViewById(R.id.hour_pv)
-        minutePv = dialog!!.findViewById(R.id.minute_pv)
-        tvCancel = dialog!!.findViewById(R.id.tv_cancel)
-        tvSelect = dialog!!.findViewById(R.id.tv_select)
-        tvHour = dialog!!.findViewById(R.id.hour_text)
-        tvMinute = dialog!!.findViewById(R.id.minute_text)
-
-        tvCancel!!.setOnClickListener {
-            selectState = false
-            dialog!!.dismiss()
-        }
-
-        tvSelect!!.setOnClickListener {
-            selectState = true
-            dialog!!.dismiss()
-        }
-
-        dialog!!.setOnDismissListener {
-            if (selectState) {
-                handler!!.setDate(1, selectedCalender.time)
-            } else {
-                handler!!.setDate(-1, null)
-            }
-        }
-    }
-
-    private fun initParameter(
-        calendar1: Calendar = startCalendar,
-        calendar2: Calendar = endCalendar
-    ) {
-
-        startYear = calendar1.get(Calendar.YEAR)
-        startMonth = calendar1.get(Calendar.MONTH) + 1
-        startDay = calendar1.get(Calendar.DAY_OF_MONTH)
-        startHour = calendar1.get(Calendar.HOUR_OF_DAY)
-        startMinute = calendar1.get(Calendar.MINUTE)
-        endYear = calendar2.get(Calendar.YEAR)
-        endMonth = calendar2.get(Calendar.MONTH) + 1
-        endDay = calendar2.get(Calendar.DAY_OF_MONTH)
-        endHour = calendar2.get(Calendar.HOUR_OF_DAY)
-        endMinute = calendar2.get(Calendar.MINUTE)
-
-        spanYear = startYear != endYear
-        spanMon = !spanYear && startMonth != endMonth
-        spanDay = !spanMon && startDay != endDay
-        spanHour = !spanDay && startHour != endHour
-        spanMin = !spanHour && startMinute != endMinute
-
-        selectedCalender.time = calendar1.time
-    }
-
-    private fun initTimer(calendar: Calendar? = startCalendar) {
-        initArrayList()
-        if (spanYear) {
-            for (i in startYear..endYear) {
-                year!!.add(i.toString())
-            }
-            for (i in startMonth..MAX_MONTH) {
-                month!!.add(formatTimeUnit(i))
-            }
-            for (i in startDay..calendar!!.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                day!!.add(formatTimeUnit(i))
-            }
-
-            if (scrollUnits and ScrollType.HOUR.value != ScrollType.HOUR.value) {
-                hour!!.add(formatTimeUnit(startHour))
-            } else {
-                for (i in startHour..MAX_HOUR) {
-                    hour!!.add(formatTimeUnit(i))
-                }
-            }
-
-            if (scrollUnits and ScrollType.MINUTE.value != ScrollType.MINUTE.value) {
-                minute!!.add(formatTimeUnit(startMinute))
-            } else {
-                for (i in startMinute..MAX_MINUTE) {
-                    minute!!.add(formatTimeUnit(i))
-                }
-            }
-        } else if (spanMon) {
-            year!!.add(startYear.toString())
-            for (i in startMonth..endMonth) {
-                month!!.add(formatTimeUnit(i))
-            }
-            for (i in startDay..calendar!!.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                day!!.add(formatTimeUnit(i))
-            }
-
-            if (scrollUnits and ScrollType.HOUR.value != ScrollType.HOUR.value) {
-                hour!!.add(formatTimeUnit(startHour))
-            } else {
-                for (i in startHour..MAX_HOUR) {
-                    hour!!.add(formatTimeUnit(i))
-                }
-            }
-
-            if (scrollUnits and ScrollType.MINUTE.value != ScrollType.MINUTE.value) {
-                minute!!.add(formatTimeUnit(startMinute))
-            } else {
-                for (i in startMinute..MAX_MINUTE) {
-                    minute!!.add(formatTimeUnit(i))
-                }
-            }
-        } else if (spanDay) {
-            year!!.add(startYear.toString())
-            month!!.add(formatTimeUnit(startMonth))
-            for (i in startDay..endDay) {
-                day!!.add(formatTimeUnit(i))
-            }
-
-            if (scrollUnits and ScrollType.HOUR.value != ScrollType.HOUR.value) {
-                hour!!.add(formatTimeUnit(startHour))
-            } else {
-                for (i in startHour..MAX_HOUR) {
-                    hour!!.add(formatTimeUnit(i))
-                }
-            }
-
-            if (scrollUnits and ScrollType.MINUTE.value != ScrollType.MINUTE.value) {
-                minute!!.add(formatTimeUnit(startMinute))
-            } else {
-                for (i in startMinute..MAX_MINUTE) {
-                    minute!!.add(formatTimeUnit(i))
-                }
-            }
-        } else if (spanHour) {
-            year!!.add(startYear.toString())
-            month!!.add(formatTimeUnit(startMonth))
-            day!!.add(formatTimeUnit(startDay))
-            if (scrollUnits and ScrollType.HOUR.value != ScrollType.HOUR.value) {
-                hour!!.add(formatTimeUnit(startHour))
-            } else {
-                for (i in startHour..endHour) {
-                    hour!!.add(formatTimeUnit(i))
-                }
-            }
-
-            if (scrollUnits and ScrollType.MINUTE.value != ScrollType.MINUTE.value) {
-                minute!!.add(formatTimeUnit(startMinute))
-            } else {
-                for (i in startMinute..MAX_MINUTE) {
-                    minute!!.add(formatTimeUnit(i))
-                }
-            }
-        } else if (spanMin) {
-            year!!.add(startYear.toString())
-            month!!.add(formatTimeUnit(startMonth))
-            day!!.add(formatTimeUnit(startDay))
-            hour!!.add(formatTimeUnit(startHour))
-
-            if (scrollUnits and ScrollType.MINUTE.value != ScrollType.MINUTE.value) {
-                minute!!.add(formatTimeUnit(startMinute))
-            } else {
-                for (i in startMinute..endMinute) {
-                    minute!!.add(formatTimeUnit(i))
-                }
-            }
-        }
-        loadComponent()
-    }
 
     /**
-     * 将“0-9”转换为“00-09”
+     * @author : 华清松
+     *
+     * 配置选择器
+     * @param type 时间选择格式，默认【年月日时分】
+     * @param startDate 起始选择时间
+     * @param endDate 结束选择时间
+     * @param selectDate 已选择时间
+     * @param onDateListener 选择结果回调监听
      */
-    private fun formatTimeUnit(unit: Int): String {
-        return if (unit < 10) "0$unit" else unit.toString()
+    data class Builder(
+        val context: Context, val type: Type = Type.YMDHM,
+        val startDate: Date, val endDate: Date, val selectDate: Date,
+        var loop: Boolean = true,
+        val onDateListener: OnDateListener
+    ) {
+
+        var pass: Boolean = true
+
+        init {
+            this.pass = startDate <= endDate
+        }
+
+        fun build(): CustomDatePicker? {
+            var showYear = true
+            var showMonth = true
+            var showDay = true
+            var showHour = true
+            var showMinute = true
+
+            when (type) {
+                Type.YMDHM -> {
+                    showYear = true
+                    showMonth = true
+                    showDay = true
+                    showHour = true
+                    showMinute = true
+                }
+                Type.YMDH -> {
+                    showYear = true
+                    showMonth = true
+                    showDay = true
+                    showHour = true
+                    showMinute = false
+                }
+                Type.YMD -> {
+                    showYear = true
+                    showMonth = true
+                    showDay = true
+                    showHour = false
+                    showMinute = false
+                }
+                Type.YM -> {
+                    showYear = true
+                    showMonth = true
+                    showDay = false
+                    showHour = false
+                    showMinute = false
+                }
+                Type.Y -> {
+                    showYear = true
+                    showMonth = false
+                    showDay = false
+                    showHour = false
+                    showMinute = false
+                }
+                Type.MDHM -> {
+                    showYear = false
+                    showMonth = true
+                    showDay = true
+                    showHour = true
+                    showMinute = true
+                }
+                Type.MDH -> {
+                    showYear = false
+                    showMonth = true
+                    showDay = true
+                    showHour = true
+                    showMinute = false
+                }
+                Type.MD -> {
+                    showYear = false
+                    showMonth = true
+                    showDay = true
+                    showHour = false
+                    showMinute = false
+                }
+                Type.DH -> {
+                    showYear = false
+                    showMonth = false
+                    showDay = true
+                    showHour = true
+                    showMinute = false
+                }
+                Type.DHM -> {
+                    showYear = false
+                    showMonth = false
+                    showDay = true
+                    showHour = true
+                    showMinute = true
+                }
+                Type.HM -> {
+                    showYear = false
+                    showMonth = false
+                    showDay = false
+                    showHour = true
+                    showMinute = true
+                }
+                Type.M -> {
+                    showYear = false
+                    showMonth = false
+                    showDay = false
+                    showHour = false
+                    showMinute = true
+                }
+                Type.H -> {
+                    showYear = false
+                    showMonth = false
+                    showDay = false
+                    showHour = true
+                    showMinute = false
+                }
+                Type.D -> {
+                    showYear = false
+                    showMonth = false
+                    showDay = true
+                    showHour = false
+                    showMinute = false
+                }
+            }
+            return if (pass) {
+                CustomDatePicker(
+                    context = context,
+                    startDate = startDate,
+                    endDate = endDate,
+                    selectDate = selectDate,
+                    loop = loop,
+                    showYear = showYear,
+                    showMonth = showMonth,
+                    showDay = showDay,
+                    showHour = showHour,
+                    showMinute = showMinute,
+                    onDateListener = onDateListener
+                )
+            } else {
+                null
+            }
+
+        }
     }
 
-    private fun initArrayList() {
-        if (year == null) {
-            year = ArrayList()
-        }
-        if (month == null) {
-            month = ArrayList()
-        }
-        if (day == null) {
-            day = ArrayList()
-        }
-        if (hour == null) {
-            hour = ArrayList()
-        }
-        if (minute == null) {
-            minute = ArrayList()
-        }
-        year!!.clear()
-        month!!.clear()
-        day!!.clear()
-        hour!!.clear()
-        minute!!.clear()
+    /**弹出选择器*/
+    fun show() {
+        initDialog()
+        initData()
+        initSelected()
+        dialog.show()
     }
 
-    private fun loadComponent() {
-        yearPv!!.setData(year!!)
-        monthPv!!.setData(month!!)
-        dayPv!!.setData(day!!)
-        hourPv!!.setData(hour!!)
-        minutePv!!.setData(minute!!)
-        yearPv!!.setSelected(0)
-        monthPv!!.setSelected(0)
-        dayPv!!.setSelected(0)
-        hourPv!!.setSelected(0)
-        minutePv!!.setSelected(0)
-        executeScroll()
-    }
+    /**初始化弹窗*/
+    private fun initDialog() {
+        dialog = Dialog(context, R.style.FormRelativeTimeDialogStyle)
+        dialog.setCancelable(true)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.form_chose_time)
+        val window = dialog.window
+        window!!.setGravity(Gravity.BOTTOM)
+        val manager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val dm = DisplayMetrics()
+        manager.defaultDisplay.getMetrics(dm)
+        val lp = window.attributes
+        lp.width = dm.widthPixels
+        window.attributes = lp
 
-    private fun addListener() {
-        yearPv!!.setOnSelectListener(object : DatePickerView.OnSelectListener {
+        pYear = dialog.year_pv
+        pMonth = dialog.month_pv
+        pDay = dialog.day_pv
+        pHour = dialog.hour_pv
+        pMinute = dialog.minute_pv
+
+        tvCancel = dialog.tv_cancel
+        tvSure = dialog.tv_select
+
+        tYear = dialog.timepicker_year_name
+        tMonth = dialog.timepicker_month_name
+        tDay = dialog.timepicker_day_name
+        tHour = dialog.timepicker_hour_name
+        tMinute = dialog.timepicker_minute_name
+
+        pYear.setIsLoop(false)
+        pMonth.setIsLoop(false)
+        pDay.setIsLoop(loop)
+        pHour.setIsLoop(loop)
+        pMinute.setIsLoop(loop)
+
+        tvCancel.setOnClickListener {
+            hasSelected = false
+            dialog.dismiss()
+        }
+
+        tvSure.setOnClickListener {
+            hasSelected = true
+            dialog.dismiss()
+        }
+
+        dialog.setOnDismissListener {
+            if (hasSelected) {
+                onDateListener.setDate(selectedCalender.time)
+            } else {
+                onDateListener.setDate(null)
+            }
+        }
+
+        pYear.setOnSelectListener(object : DatePickerView.OnSelectListener {
             override fun onSelect(text: String) {
                 selectedCalender.set(Calendar.YEAR, Integer.parseInt(text))
-                monthChange()
+                changeMonth()
             }
         })
 
-        monthPv!!.setOnSelectListener(object : DatePickerView.OnSelectListener {
+        pMonth.setOnSelectListener(object : DatePickerView.OnSelectListener {
             override fun onSelect(text: String) {
                 selectedCalender.set(Calendar.DAY_OF_MONTH, 1)
                 selectedCalender.set(Calendar.MONTH, Integer.parseInt(text) - 1)
-                dayChange()
+                changeDay()
             }
         })
 
-        dayPv!!.setOnSelectListener(
-            object : DatePickerView.OnSelectListener {
-                override fun onSelect(text: String) {
-                    selectedCalender.set(Calendar.DAY_OF_MONTH, Integer.parseInt(text))
-                    hourChange()
-                }
-            })
+        pDay.setOnSelectListener(object : DatePickerView.OnSelectListener {
+            override fun onSelect(text: String) {
+                selectedCalender.set(Calendar.DAY_OF_MONTH, Integer.parseInt(text))
+                changeHour()
+            }
+        })
 
-        hourPv!!.setOnSelectListener(
-            object : DatePickerView.OnSelectListener {
-                override fun onSelect(text: String) {
-                    selectedCalender.set(Calendar.HOUR_OF_DAY, Integer.parseInt(text))
-                    minuteChange()
-                }
-            })
+        pHour.setOnSelectListener(object : DatePickerView.OnSelectListener {
+            override fun onSelect(text: String) {
+                selectedCalender.set(Calendar.HOUR_OF_DAY, Integer.parseInt(text))
+                changeMinute()
+            }
+        })
 
-        minutePv!!.setOnSelectListener(
-            object : DatePickerView.OnSelectListener {
-                override fun onSelect(text: String) {
-                    selectedCalender.set(Calendar.MINUTE, Integer.parseInt(text))
-                }
-            })
+        pMinute.setOnSelectListener(object : DatePickerView.OnSelectListener {
+            override fun onSelect(text: String) {
+                selectedCalender.set(Calendar.MINUTE, Integer.parseInt(text))
+            }
+        })
     }
 
-    private fun monthChange() {
-        month!!.clear()
+    /**初始化数据*/
+    private fun initData() {
+
+        listYear.clear()
+        listMonth.clear()
+        listDay.clear()
+        listHour.clear()
+        listMinute.clear()
+
+        startCalendar.time = startDate
+        endCalendar.time = endDate
+
+        startYear = startCalendar.get(Calendar.YEAR)
+        startMonth = startCalendar.get(Calendar.MONTH) + 1
+        startDay = startCalendar.get(Calendar.DAY_OF_MONTH)
+        startHour = startCalendar.get(Calendar.HOUR_OF_DAY)
+        startMinute = startCalendar.get(Calendar.MINUTE)
+
+        endYear = endCalendar.get(Calendar.YEAR)
+        endMonth = endCalendar.get(Calendar.MONTH) + 1
+        endDay = endCalendar.get(Calendar.DAY_OF_MONTH)
+        endHour = endCalendar.get(Calendar.HOUR_OF_DAY)
+        endMinute = endCalendar.get(Calendar.MINUTE)
+
+        initYearData()
+        initMonthData()
+        initDayData()
+        initHourData()
+        initMinuteData()
+
+    }
+
+    /**初始化已选时间*/
+    private fun initSelected() {
+        selectedCalender.time = selectDate
+
+        val selectedYear = selectedCalender.get(Calendar.YEAR)
+        val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
+        val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
+        val selectedHour = selectedCalender.get(Calendar.HOUR_OF_DAY)
+        val selectedMinute = selectedCalender.get(Calendar.MINUTE)
+
+        tYear.visibility = if (showYear) View.VISIBLE else View.GONE
+        pYear.visibility = if (showYear) View.VISIBLE else View.GONE
+        pYear.setCanScroll(showYear && listYear.size > 1)
+        pYear.setSelected(formatTimeUnit(selectedYear))
+
+        tMonth.visibility = if (showMonth) View.VISIBLE else View.GONE
+        pMonth.visibility = if (showMonth) View.VISIBLE else View.GONE
+        pMonth.setCanScroll(showYear && listMonth.size > 1)
+        pMonth.setSelected(formatTimeUnit(selectedMonth))
+
+        tDay.visibility = if (showDay) View.VISIBLE else View.GONE
+        pDay.visibility = if (showDay) View.VISIBLE else View.GONE
+        pDay.setCanScroll(showDay && listDay.size > 1)
+        pDay.setSelected(formatTimeUnit(selectedDay))
+
+        tHour.visibility = if (showHour) View.VISIBLE else View.GONE
+        pHour.visibility = if (showHour) View.VISIBLE else View.GONE
+        pHour.setCanScroll(showHour && listHour.size > 1)
+        pHour.setSelected(formatTimeUnit(selectedHour))
+
+        tMinute.visibility = if (showMinute) View.VISIBLE else View.GONE
+        pMinute.visibility = if (showMinute) View.VISIBLE else View.GONE
+        pMinute.setCanScroll(showMinute && listMinute.size > 1)
+        pMinute.setSelected(formatTimeUnit(selectedMinute))
+
+    }
+
+    /**初始化年数据*/
+    private fun initYearData() {
+        listYear.clear()
+        for (i in startYear..endYear) {
+            listYear.add(formatTimeUnit(i))
+        }
+        pYear.setData(listYear)
+    }
+
+    /**初始化月份数据*/
+    private fun initMonthData() {
+        listMonth.clear()
         when (selectedCalender.get(Calendar.YEAR)) {
             startYear -> for (i in startMonth..MAX_MONTH) {
-                month!!.add(formatTimeUnit(i))
+                listMonth.add(formatTimeUnit(i))
             }
             endYear -> for (i in 1..endMonth) {
-                month!!.add(formatTimeUnit(i))
+                listMonth.add(formatTimeUnit(i))
             }
             else -> for (i in 1..MAX_MONTH) {
-                month!!.add(formatTimeUnit(i))
+                listMonth.add(formatTimeUnit(i))
             }
         }
-        selectedCalender.set(Calendar.MONTH, Integer.parseInt(month!![0]) - 1)
-        monthPv!!.setData(month!!)
-        monthPv!!.setSelected(0)
-        executeAnimator(monthPv)
-
-        monthPv!!.postDelayed({ dayChange() }, 100)
+        pMonth.setData(listMonth)
     }
 
-    private fun dayChange() {
-        day!!.clear()
+    /**修改月份数据*/
+    private fun changeMonth() {
+        initMonthData()
+        pMonth.setSelected(0)
+        selectedCalender.set(Calendar.MONTH, Integer.parseInt(listMonth[0]) - 1)
+        executeAnimator(pMonth)
+        pMonth.postDelayed({ changeDay() }, 100)
+    }
+
+    /**初始化日数据*/
+    private fun initDayData() {
+        listDay.clear()
         val selectedYear = selectedCalender.get(Calendar.YEAR)
         val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
         if (selectedYear == startYear && selectedMonth == startMonth) {
             for (i in startDay..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                day!!.add(formatTimeUnit(i))
+                listDay.add(formatTimeUnit(i))
             }
         } else if (selectedYear == endYear && selectedMonth == endMonth) {
             for (i in 1..endDay) {
-                day!!.add(formatTimeUnit(i))
+                listDay.add(formatTimeUnit(i))
             }
         } else {
             for (i in 1..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                day!!.add(formatTimeUnit(i))
+                listDay.add(formatTimeUnit(i))
             }
         }
-        selectedCalender.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day!![0]))
-        dayPv!!.setData(day!!)
-        dayPv!!.setSelected(0)
-        executeAnimator(dayPv)
-
-        dayPv!!.postDelayed({ hourChange() }, 100)
+        pDay.setData(listDay)
     }
 
-    private fun hourChange() {
-        if (scrollUnits and ScrollType.HOUR.value == ScrollType.HOUR.value) {
-            hour!!.clear()
-            val selectedYear = selectedCalender.get(Calendar.YEAR)
-            val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
-            val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
-            if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay) {
-                for (i in startHour..MAX_HOUR) {
-                    hour!!.add(formatTimeUnit(i))
-                }
-            } else if (selectedYear == endYear && selectedMonth == endMonth && selectedDay == endDay) {
-                for (i in MIN_HOUR..endHour) {
-                    hour!!.add(formatTimeUnit(i))
-                }
-            } else {
-                for (i in MIN_HOUR..MAX_HOUR) {
-                    hour!!.add(formatTimeUnit(i))
-                }
+    /**修改日数据*/
+    private fun changeDay() {
+        initDayData()
+        selectedCalender.set(Calendar.DAY_OF_MONTH, Integer.parseInt(listDay[0]))
+        pDay.setSelected(0)
+        executeAnimator(pDay)
+        pDay.postDelayed({ changeHour() }, 100)
+    }
+
+    /**初始化小时数据*/
+    private fun initHourData() {
+        listHour.clear()
+        val selectedYear = selectedCalender.get(Calendar.YEAR)
+        val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
+        val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
+        if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay) {
+            for (i in startHour..MAX_HOUR) {
+                listHour.add(formatTimeUnit(i))
             }
-            selectedCalender.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour!![0]))
-            hourPv!!.setData(hour!!)
-            hourPv!!.setSelected(0)
-            executeAnimator(hourPv)
-        }
-
-        hourPv!!.postDelayed({ minuteChange() }, 100)
-    }
-
-    private fun minuteChange() {
-        if (scrollUnits and ScrollType.MINUTE.value == ScrollType.MINUTE.value) {
-            minute!!.clear()
-            val selectedYear = selectedCalender.get(Calendar.YEAR)
-            val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
-            val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
-            val selectedHour = selectedCalender.get(Calendar.HOUR_OF_DAY)
-            if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay && selectedHour == startHour) {
-                for (i in startMinute..MAX_MINUTE) {
-                    minute!!.add(formatTimeUnit(i))
-                }
-            } else if (selectedYear == endYear && selectedMonth == endMonth && selectedDay == endDay && selectedHour == endHour) {
-                for (i in MIN_MINUTE..endMinute) {
-                    minute!!.add(formatTimeUnit(i))
-                }
-            } else {
-                for (i in MIN_MINUTE..MAX_MINUTE) {
-                    minute!!.add(formatTimeUnit(i))
-                }
+        } else if (selectedYear == endYear && selectedMonth == endMonth && selectedDay == endDay) {
+            for (i in MIN_HOUR..endHour) {
+                listHour.add(formatTimeUnit(i))
             }
-            selectedCalender.set(Calendar.MINUTE, Integer.parseInt(minute!![0]))
-            minutePv!!.setData(minute!!)
-            minutePv!!.setSelected(0)
-            executeAnimator(minutePv)
+        } else {
+            for (i in MIN_HOUR..MAX_HOUR) {
+                listHour.add(formatTimeUnit(i))
+            }
         }
-        executeScroll()
+        pHour.setData(listHour)
     }
 
+    /**修改小时数据*/
+    private fun changeHour() {
+        initHourData()
+        selectedCalender.set(Calendar.HOUR_OF_DAY, Integer.parseInt(listHour[0]))
+        pHour.setSelected(0)
+        executeAnimator(pHour)
+
+        pHour.postDelayed({ changeMinute() }, 100)
+    }
+
+    /**初始化分钟数据*/
+    private fun initMinuteData() {
+        listMinute.clear()
+        val selectedYear = selectedCalender.get(Calendar.YEAR)
+        val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
+        val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
+        val selectedHour = selectedCalender.get(Calendar.HOUR_OF_DAY)
+        if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay && selectedHour == startHour) {
+            for (i in startMinute..MAX_MINUTE) {
+                listMinute.add(formatTimeUnit(i))
+            }
+        } else if (selectedYear == endYear && selectedMonth == endMonth && selectedDay == endDay && selectedHour == endHour) {
+            for (i in MIN_MINUTE..endMinute) {
+                listMinute.add(formatTimeUnit(i))
+            }
+        } else {
+            for (i in MIN_MINUTE..MAX_MINUTE) {
+                listMinute.add(formatTimeUnit(i))
+            }
+        }
+        pMinute.setData(listMinute)
+    }
+
+    /**修改分钟数据*/
+    private fun changeMinute() {
+        if (showMinute) {
+            initMinuteData()
+            selectedCalender.set(Calendar.MINUTE, Integer.parseInt(listMinute[0]))
+            pMinute.setSelected(0)
+            executeAnimator(pMinute)
+        }
+    }
+
+    /**文字动画*/
     private fun executeAnimator(view: View?) {
         val pvhX = PropertyValuesHolder.ofFloat("alpha", 1f, 0f, 1f)
         val pvhY = PropertyValuesHolder.ofFloat("scaleX", 1f, 1.3f, 1f)
         val pvhZ = PropertyValuesHolder.ofFloat("scaleY", 1f, 1.3f, 1f)
-        ObjectAnimator.ofPropertyValuesHolder(view, pvhX, pvhY, pvhZ).setDuration(200).start()
+        ObjectAnimator.ofPropertyValuesHolder(view, pvhX, pvhY, pvhZ).setDuration(100).start()
     }
 
-    private fun executeScroll() {
-        yearPv!!.setCanScroll(year!!.size > 1)
-        monthPv!!.setCanScroll(month!!.size > 1)
-        dayPv!!.setCanScroll(day!!.size > 1)
-        hourPv!!.setCanScroll(hour!!.size > 1 && scrollUnits and ScrollType.HOUR.value == ScrollType.HOUR.value)
-        minutePv!!.setCanScroll(minute!!.size > 1 && scrollUnits and ScrollType.MINUTE.value == ScrollType.MINUTE.value)
+    /**将“0-9”转换为“00-09”*/
+    private fun formatTimeUnit(unit: Int): String {
+        return if (unit < 10) "0$unit" else unit.toString()
     }
 
-    private fun disScrollUnit(vararg scrollTypes: ScrollType): Int {
-        if (scrollTypes.isEmpty()) {
-            scrollUnits = ScrollType.HOUR.value + ScrollType.MINUTE.value
-        } else {
-            for (scroll_type in scrollTypes) {
-                scrollUnits = scrollUnits xor scroll_type.value
-            }
-        }
-        return scrollUnits
-    }
-
-    fun show(time: String) {
-        if (canAccess) {
-            if (isValidDate(time)) {
-                /*判断时间*/
-                if (startCalendar.time.time < endCalendar.time.time) {
-                    canAccess = true
-                    if (isStartTime) {
-                        initParameter()
-                    } else {
-                        initParameter(secondStartCalender, secondEndCalender)
-                    }
-                    initTimer()
-                    addListener()
-                    setSelectedTime(time)
-                    dialog!!.show()
-                }
-            } else {
-                canAccess = false
-            }
-        }
-    }
-
-    /**
-     * 设置日期控件是否显示时和分
-     */
-    private fun showSpecificTime(show: Boolean) {
-        if (canAccess) {
-            if (show) {
-                disScrollUnit()
-                hourPv!!.visibility = View.VISIBLE
-                tvHour!!.visibility = View.VISIBLE
-                minutePv!!.visibility = View.VISIBLE
-                tvMinute!!.visibility = View.VISIBLE
-            } else {
-                disScrollUnit(
-                    ScrollType.HOUR,
-                    ScrollType.MINUTE
-                )
-                hourPv!!.visibility = View.GONE
-                tvHour!!.visibility = View.GONE
-                minutePv!!.visibility = View.GONE
-                tvMinute!!.visibility = View.GONE
-            }
-        }
-    }
-
-    /**
-     * 设置日期控件是否显示日
-     */
-    fun showDayTime(showDay: Boolean, showSpecific: Boolean) {
-        if (canAccess) {
-            if (showDay) {
-                disScrollUnit()
-                dayPv!!.visibility = View.VISIBLE
-                tvDay!!.visibility = View.VISIBLE
-                showSpecificTime(showSpecific)
-            } else {
-                disScrollUnit(
-                    ScrollType.HOUR,
-                    ScrollType.MINUTE
-                )
-                dayPv!!.visibility = View.GONE
-                tvDay!!.visibility = View.GONE
-                showSpecificTime(false)
-            }
-        }
-    }
-
-    /**
-     * 设置日期控件是否可以循环滚动
-     */
-    fun setIsLoop(isLoop: Boolean) {
-        if (canAccess) {
-            this.yearPv!!.setIsLoop(isLoop)
-            this.monthPv!!.setIsLoop(isLoop)
-            this.dayPv!!.setIsLoop(isLoop)
-            this.hourPv!!.setIsLoop(isLoop)
-            this.minutePv!!.setIsLoop(isLoop)
-        }
-    }
-
-    /**
-     * 设置日期控件默认选中的时间
-     */
-    private fun setSelectedTime(time: String) {
-        if (canAccess) {
-            val str = time.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            val dateStr = str[0].split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-            yearPv!!.setSelected(dateStr[0])
-            selectedCalender.set(Calendar.YEAR, Integer.parseInt(dateStr[0]))
-
-            month!!.clear()
-            val selectedYear = selectedCalender.get(Calendar.YEAR)
-            if (startYear == endYear) {
-                for (i in startMonth..endMonth) {
-                    month!!.add(formatTimeUnit(i))
-                }
-            } else {
-                when (selectedYear) {
-                    startYear -> for (i in startMonth..MAX_MONTH) {
-                        month!!.add(formatTimeUnit(i))
-                    }
-                    endYear -> for (i in 1..endMonth) {
-                        month!!.add(formatTimeUnit(i))
-                    }
-                    else -> for (i in 1..MAX_MONTH) {
-                        month!!.add(formatTimeUnit(i))
-                    }
-                }
-            }
-            monthPv!!.setData(month!!)
-            monthPv!!.setSelected(dateStr[1])
-            selectedCalender.set(Calendar.MONTH, Integer.parseInt(dateStr[1]) - 1)
-            executeAnimator(monthPv)
-
-            day!!.clear()
-            val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
-            if (startYear == endYear && startMonth == endMonth) {
-                for (i in startDay..endDay) {
-                    day!!.add(formatTimeUnit(i))
-                }
-            } else {
-                if (selectedYear == startYear && selectedMonth == startMonth) {
-                    for (i in startDay..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                        day!!.add(formatTimeUnit(i))
-                    }
-                } else if (selectedYear == endYear && selectedMonth == endMonth) {
-                    for (i in 1..endDay) {
-                        day!!.add(formatTimeUnit(i))
-                    }
-                } else {
-                    for (i in 1..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                        day!!.add(formatTimeUnit(i))
-                    }
-                }
-            }
-            dayPv!!.setData(day!!)
-            dayPv!!.setSelected(dateStr[2])
-            selectedCalender.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateStr[2]))
-            executeAnimator(dayPv)
-
-            if (str.size == 2) {
-                val timeStr =
-                    str[1].split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-                if (scrollUnits and ScrollType.HOUR.value == ScrollType.HOUR.value) {
-                    hour!!.clear()
-                    val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
-                    if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay) {
-                        for (i in startHour..MAX_HOUR) {
-                            hour!!.add(formatTimeUnit(i))
-                        }
-                    } else if (selectedYear == endYear && selectedMonth == endMonth && selectedDay == endDay) {
-                        for (i in MIN_HOUR..endHour) {
-                            hour!!.add(formatTimeUnit(i))
-                        }
-                    } else {
-                        for (i in MIN_HOUR..MAX_HOUR) {
-                            hour!!.add(formatTimeUnit(i))
-                        }
-                    }
-                    hourPv!!.setData(hour!!)
-                    hourPv!!.setSelected(timeStr[0])
-                    selectedCalender.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeStr[0]))
-                    executeAnimator(hourPv)
-                }
-
-                if (scrollUnits and ScrollType.MINUTE.value == ScrollType.MINUTE.value) {
-                    minute!!.clear()
-                    val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
-                    val selectedHour = selectedCalender.get(Calendar.HOUR_OF_DAY)
-                    if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay && selectedHour == startHour) {
-                        for (i in startMinute..MAX_MINUTE) {
-                            minute!!.add(formatTimeUnit(i))
-                        }
-                    } else if (selectedYear == endYear && selectedMonth == endMonth && selectedDay == endDay && selectedHour == endHour) {
-                        for (i in MIN_MINUTE..endMinute) {
-                            minute!!.add(formatTimeUnit(i))
-                        }
-                    } else {
-                        for (i in MIN_MINUTE..MAX_MINUTE) {
-                            minute!!.add(formatTimeUnit(i))
-                        }
-                    }
-                    minutePv!!.setData(minute!!)
-                    minutePv!!.setSelected(timeStr[1])
-                    selectedCalender.set(Calendar.MINUTE, Integer.parseInt(timeStr[1]))
-                    executeAnimator(minutePv)
-                }
-            }
-            executeScroll()
-        }
-    }
-
-    /**
-     * 验证字符串是否是一个合法的日期格式
-     */
-    private fun isValidDate(date: String): Boolean {
-        var convertSuccess = true
-        // 指定日期格式
-        try {
-            // 设置lenient为false. 否则SimpleDateFormat会比较宽松地验证日期，比如2015/02/29会被接受，并转换成2015/03/01
-            sdf.isLenient = false
-            sdf.parse(date)
-        } catch (e: Exception) {
-            // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
-            convertSuccess = false
-        }
-
-        return convertSuccess
-    }
-
-    companion object {
-        private const val MAX_MINUTE = 59
-        private const val MAX_HOUR = 23
-        private const val MIN_MINUTE = 0
-        private const val MIN_HOUR = 0
-        private const val MAX_MONTH = 12
-    }
 }
