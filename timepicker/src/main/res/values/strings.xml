@@ -6,6 +6,6 @@
     <string name="timepicker_year">年</string>
     <string name="timepicker_month">月</string>
     <string name="timepicker_day">日</string>
-    <string name="timepicker_hour">小\n时</string>
+    <string name="timepicker_hour">时</string>
     <string name="timepicker_minute">分</string>
 </resources>

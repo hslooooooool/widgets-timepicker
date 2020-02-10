@@ -31,27 +31,34 @@ object TimePickHelper {
         limitMin: Date? = null, limitMax: Date? = null,
         onDateListener: OnDateListener
     ) {
-        val mSelectDate = selected ?: Date()
+        var mSelectDate = selected ?: Date()
         val mCalendar = Calendar.getInstance()
+        mCalendar.time = mSelectDate
+        mCalendar.set(Calendar.SECOND, 0)
+        mSelectDate = mCalendar.time
 
         /**可选范围*/
-        val startDate: Date
-        val endDate: Date
+        var startDate: Date
+        var endDate: Date
         /**将要设置开始时间，那么开始时间不得大于完结时间，如果结束时间为空，则随意设置，但不得小于当前时间，但如果开始时间不为空，则判断开始与当前时间大小*/
         if (limitMax == null) {
-            mCalendar.time = mSelectDate
             mCalendar.set(Calendar.YEAR, mCalendar.get(Calendar.YEAR) - span)
             startDate = limitMin ?: mCalendar.time
-            mCalendar.set(Calendar.YEAR, mCalendar.get(Calendar.YEAR) + span)
+            mCalendar.set(Calendar.YEAR, mCalendar.get(Calendar.YEAR) + 2 * span)
             endDate = mCalendar.time
         } else {
+            mCalendar.time = limitMax
             /**完结时间不为空，开始时间不得大于完结时间，则最大可设置时间不得大于完结时间*/
             endDate = limitMax
-            mCalendar.time = limitMax
             mCalendar.set(Calendar.YEAR, mCalendar.get(Calendar.YEAR) - span)
             startDate = limitMin ?: mCalendar.time
         }
-
+        if (startDate > mSelectDate) {
+            startDate = mSelectDate
+        }
+        if (endDate < mSelectDate) {
+            endDate = mSelectDate
+        }
         /**创建时间选择器*/
         val mPicker = CustomDatePicker.Builder(
             context = context,

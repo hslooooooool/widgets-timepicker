@@ -18,26 +18,30 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mLayoutManager: RecyclerView.LayoutManager
     private lateinit var mContext: Context
     private val list = arrayListOf(
-        "00普通时间格式\n格式：年月日时分\n限制：当前时间上下【10年】",
+        "普通时间\n格式：年月日时分\n限制：当前时间上下【10年】",
 
-        "01定制时间格式\n格式：年月日时\n限制：当前时间上下【10年】",
-        "02定制时间格式\n格式：年月日\n限制：当前时间上下【10年】",
-        "03定制时间格式\n格式：年月\n限制：当前时间上下【10年】",
-        "04定制时间格式\n格式：年\n限制：当前时间上下【10年】",
+        "定制时间\n格式：年月日时\n限制：当前时间上下【10年】",
+        "定制时间\n格式：年月日\n限制：当前时间上下【10年】",
+        "定制时间\n格式：年月\n限制：当前时间上下【10年】",
+        "定制时间\n格式：年\n限制：当前时间上下【10年】",
 
-        "05定制时间格式\n格式：【今月】日时分\n限制：当前时间【今月】",
-        "06定制时间格式\n格式：【今月】日时\n限制：当前时间【今月】",
-        "07定制时间格式\n格式：【今日】时分\n限制：当前时间【今日】",
+        "定制时间\n格式：【今月】日时分\n限制：当前时间【今月】",
+        "定制时间\n格式：【今月】日时\n限制：当前时间【今月】",
+        "定制时间\n格式：【今日】时分\n限制：当前时间【今日】",
 
-        "08限制时间格式\n格式：年月日时分\n限制：设定时间上下【1年】",
-        "09限制时间格式\n格式：年月日时分\n限制：当前时间上下【1年】",
-        "10限制时间格式\n格式：年月日时分\n限制：设定时间上下【5年】",
-        "11限制时间格式\n格式：年月日时分\n限制：当前时间上下【5年】",
+        "限制时间\n格式：年月日时分\n限制：设定时间上下【1年】",
+        "限制时间\n格式：年月日时分\n限制：当前时间上下【1年】",
+        "限制时间\n格式：年月日时分\n限制：设定时间上下【5年】",
+        "限制时间\n格式：年月日时分\n限制：当前时间上下【5年】",
 
-        "12限制时间格式\n格式：年月日时分\n限制：设定时间往前【5年】",
-        "13限制时间格式\n格式：年月日时分\n限制：当前时间往前【5年】",
-        "14限制时间格式\n格式：年月日时分\n限制：设定时间往后【5年】",
-        "15限制时间格式\n格式：年月日时分\n限制：当前时间往后【5年】"
+        "限制时间\n格式：年月日时分\n限制：设定时间往前【5年】",
+        "限制时间\n格式：年月日时分\n限制：当前时间往前【5年】",
+        "限制时间\n格式：年月日时分\n限制：设定时间往后【5年】",
+        "限制时间\n格式：年月日时分\n限制：当前时间往后【5年】",
+
+        "限制时间\n格式：年月日时分\n限制：设定时间往前【5年】，往后【1年】",
+        "限制时间\n格式：年月日时分\n限制：当前时间往前【5年】，往后【1年】",
+        "错误时间\n格式：年月日时分\n错误：开始时间大于设定时间或结束时间小于设定时间"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,8 +64,6 @@ class MainActivity : AppCompatActivity() {
                 val nowYear = mCalendar.get(Calendar.YEAR)
                 val nowMonth = mCalendar.get(Calendar.MONTH)
                 val nowDay = mCalendar.get(Calendar.DAY_OF_MONTH)
-                val nowHour = mCalendar.get(Calendar.HOUR_OF_DAY)
-                val nowMinute = mCalendar.get(Calendar.MINUTE)
 
                 when (p) {
                     0 -> {
@@ -270,6 +272,57 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    16 -> {
+                        mCalendar.set(2020, 2 - 1, 2, 2, 2)
+                        val limitDate = mCalendar.time
+                        mCalendar.set(Calendar.YEAR, 2020 - 5)
+                        val limitDateStart = mCalendar.time
+                        mCalendar.set(Calendar.YEAR, 2020 + 1)
+                        val limitDateEnd = mCalendar.time
+
+                        TimePickHelper.picker(
+                            context = mContext,
+                            timeType = CustomDatePicker.Type.YMDHM,
+                            limitMin = limitDateStart,
+                            limitMax = limitDateEnd,
+                            selected = limitDate,
+                            onDateListener = onDateListener
+                        )
+                    }
+                    17 -> {
+                        mCalendar.set(Calendar.YEAR, nowYear - 5)
+                        val limitDateStart = mCalendar.time
+                        mCalendar.set(Calendar.YEAR, nowYear + 1)
+                        val limitDateEnd = mCalendar.time
+
+                        TimePickHelper.picker(
+                            context = mContext,
+                            timeType = CustomDatePicker.Type.YMDHM,
+                            limitMin = limitDateStart,
+                            limitMax = limitDateEnd,
+                            selected = nowDate,
+                            onDateListener = onDateListener
+                        )
+                    }
+                    18 -> {
+                        mCalendar.set(2020, 2 - 1, 2, 2, 2)
+                        val limitDate = mCalendar.time
+
+                        mCalendar.set(Calendar.YEAR, 2020 + 1)
+                        val limitDateStart = mCalendar.time
+
+                        mCalendar.set(Calendar.YEAR, 2020 - 1)
+                        val limitDateEnd = mCalendar.time
+
+                        TimePickHelper.picker(
+                            context = mContext,
+                            timeType = CustomDatePicker.Type.YMDHM,
+                            limitMin = limitDateStart,
+                            limitMax = limitDateEnd,
+                            selected = limitDate,
+                            onDateListener = onDateListener
+                        )
+                    }
                 }
             }
         })
@@ -279,7 +332,7 @@ class MainActivity : AppCompatActivity() {
         override fun setDate(date: Date?) {
             date?.let {
                 timepicker_picked.text =
-                    DateUtils.format(date = it, timeType = DateUtils.TimeType.YMDHM)
+                    DateUtils.format(date = it, timeType = DateUtils.TimeType.YMDHMS)
             }
         }
     }

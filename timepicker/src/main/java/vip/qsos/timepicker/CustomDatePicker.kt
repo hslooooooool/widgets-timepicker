@@ -432,11 +432,15 @@ class CustomDatePicker constructor(
     /**初始化月份数据*/
     private fun initMonthData() {
         listMonth.clear()
-        when (selectedCalender.get(Calendar.YEAR)) {
-            startYear -> for (i in startMonth..MAX_MONTH) {
+        val year = selectedCalender.get(Calendar.YEAR)
+        when {
+            startDate == endDate -> {
+                listMonth.add(formatTimeUnit(startMonth))
+            }
+            year == startYear -> for (i in startMonth..MAX_MONTH) {
                 listMonth.add(formatTimeUnit(i))
             }
-            endYear -> for (i in 1..endMonth) {
+            year == endYear -> for (i in 1..endMonth) {
                 listMonth.add(formatTimeUnit(i))
             }
             else -> for (i in 1..MAX_MONTH) {
@@ -460,17 +464,25 @@ class CustomDatePicker constructor(
         listDay.clear()
         val selectedYear = selectedCalender.get(Calendar.YEAR)
         val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
-        if (selectedYear == startYear && selectedMonth == startMonth) {
-            for (i in startDay..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                listDay.add(formatTimeUnit(i))
+
+        when {
+            startDate == endDate -> {
+                listDay.add(formatTimeUnit(startDay))
             }
-        } else if (selectedYear == endYear && selectedMonth == endMonth) {
-            for (i in 1..endDay) {
-                listDay.add(formatTimeUnit(i))
+            selectedYear == startYear && selectedMonth == startMonth -> {
+                for (i in startDay..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                    listDay.add(formatTimeUnit(i))
+                }
             }
-        } else {
-            for (i in 1..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                listDay.add(formatTimeUnit(i))
+            selectedYear == endYear && selectedMonth == endMonth -> {
+                for (i in 1..endDay) {
+                    listDay.add(formatTimeUnit(i))
+                }
+            }
+            else -> {
+                for (i in 1..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                    listDay.add(formatTimeUnit(i))
+                }
             }
         }
         pDay.setData(listDay)
@@ -491,17 +503,24 @@ class CustomDatePicker constructor(
         val selectedYear = selectedCalender.get(Calendar.YEAR)
         val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
         val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
-        if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay) {
-            for (i in startHour..MAX_HOUR) {
-                listHour.add(formatTimeUnit(i))
+        when {
+            startDate == endDate -> {
+                listHour.add(formatTimeUnit(startHour))
             }
-        } else if (selectedYear == endYear && selectedMonth == endMonth && selectedDay == endDay) {
-            for (i in MIN_HOUR..endHour) {
-                listHour.add(formatTimeUnit(i))
+            selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay -> {
+                for (i in startHour..MAX_HOUR) {
+                    listHour.add(formatTimeUnit(i))
+                }
             }
-        } else {
-            for (i in MIN_HOUR..MAX_HOUR) {
-                listHour.add(formatTimeUnit(i))
+            selectedYear == endYear && selectedMonth == endMonth && selectedDay == endDay -> {
+                for (i in MIN_HOUR..endHour) {
+                    listHour.add(formatTimeUnit(i))
+                }
+            }
+            else -> {
+                for (i in MIN_HOUR..MAX_HOUR) {
+                    listHour.add(formatTimeUnit(i))
+                }
             }
         }
         pHour.setData(listHour)
@@ -524,17 +543,24 @@ class CustomDatePicker constructor(
         val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
         val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
         val selectedHour = selectedCalender.get(Calendar.HOUR_OF_DAY)
-        if (selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay && selectedHour == startHour) {
-            for (i in startMinute..MAX_MINUTE) {
-                listMinute.add(formatTimeUnit(i))
+        when {
+            startDate == endDate -> {
+                listMinute.add(formatTimeUnit(startMinute))
             }
-        } else if (selectedYear == endYear && selectedMonth == endMonth && selectedDay == endDay && selectedHour == endHour) {
-            for (i in MIN_MINUTE..endMinute) {
-                listMinute.add(formatTimeUnit(i))
+            selectedYear == startYear && selectedMonth == startMonth && selectedDay == startDay && selectedHour == startHour -> {
+                for (i in startMinute..MAX_MINUTE) {
+                    listMinute.add(formatTimeUnit(i))
+                }
             }
-        } else {
-            for (i in MIN_MINUTE..MAX_MINUTE) {
-                listMinute.add(formatTimeUnit(i))
+            selectedYear == endYear && selectedMonth == endMonth && selectedDay == endDay && selectedHour == endHour -> {
+                for (i in MIN_MINUTE..endMinute) {
+                    listMinute.add(formatTimeUnit(i))
+                }
+            }
+            else -> {
+                for (i in MIN_MINUTE..MAX_MINUTE) {
+                    listMinute.add(formatTimeUnit(i))
+                }
             }
         }
         pMinute.setData(listMinute)
