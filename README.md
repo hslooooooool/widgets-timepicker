@@ -4,6 +4,15 @@
 [![image](https://jitpack.io/v/hslooooooool/qsos-timepicker.svg)](https://jitpack.io/#hslooooooool/qsos-timepicker)
 
 ```
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
+```
 dependencies {
 	        implementation 'com.github.hslooooooool:qsos-timepicker:[version]'
 	}
