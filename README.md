@@ -342,7 +342,7 @@ dependencies {
 
 ```
 ## 部分视图
-![image1](../doc/image1.jpg)
-![image2](../doc/image2.jpg)
-![image3](../doc/image3.jpg)
-![image4](../doc/image4.jpg)
+![image1](./doc/image1.jpg)
+![image2](./doc/image2.jpg)
+![image3](./doc/image3.jpg)
+![image4](./doc/image4.jpg)
