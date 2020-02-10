@@ -331,7 +331,7 @@
 
 ```
 ## 部分视图
-![image1](../doc/视图1.jpg)
-![image2](../doc/视图2.jpg)
-![image3](../doc/视图3.jpg)
-![image4](../doc/视图4.jpg)
+![image1](../doc/image1.jpg)
+![image2](../doc/image2.jpg)
+![image3](../doc/image3.jpg)
+![image4](../doc/image4.jpg)
