@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#03A9F4</color>
+    <color name="colorPrimary">#000000</color>
 
     <color name="timepicker_background">#FFFFFF</color>
+    <color name="timepicker_title">#000000</color>
+    <color name="timepicker_cancel">#888888</color>
+    <color name="timepicker_sure">#000000</color>
+    <color name="timepicker_time">#000000</color>
 </resources>

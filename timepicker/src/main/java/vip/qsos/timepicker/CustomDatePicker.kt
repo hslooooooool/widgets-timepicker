@@ -10,7 +10,7 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.TextView
-import kotlinx.android.synthetic.main.form_chose_time.*
+import kotlinx.android.synthetic.main.timepicker_main.*
 import vip.qsos.form_n.R
 import java.util.*
 
@@ -272,7 +272,7 @@ class CustomDatePicker constructor(
         dialog = Dialog(context, R.style.FormRelativeTimeDialogStyle)
         dialog.setCancelable(true)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.form_chose_time)
+        dialog.setContentView(R.layout.timepicker_main)
         val window = dialog.window
         window!!.setGravity(Gravity.BOTTOM)
         val manager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

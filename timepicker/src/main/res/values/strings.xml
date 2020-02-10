@@ -1,5 +1,4 @@
 <resources>
-	<string name="form_name">表单组件</string>
     <string name="timepicker_title">时间选择</string>
     <string name="timepicker_cancel">取消</string>
     <string name="timepicker_sure">确认</string>

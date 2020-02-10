@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/operation_tv"
-    style="@style/FormBottomQuotOperationStyle"
-    android:drawableStart="@drawable/form_dot_black"
-    tools:text="标题" />

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:background="@color/timepicker_background"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -17,7 +17,7 @@
             android:layout_centerVertical="true"
             android:padding="10dp"
             android:text="@string/timepicker_cancel"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/timepicker_cancel"
             android:textSize="16sp" />
 
         <TextView
@@ -32,7 +32,7 @@
             android:padding="10dp"
             android:singleLine="true"
             android:text="@string/timepicker_title"
-            android:textColor="@android:color/black"
+            android:textColor="@color/timepicker_title"
             android:textSize="20sp" />
 
         <TextView
@@ -43,7 +43,7 @@
             android:layout_centerVertical="true"
             android:padding="10dp"
             android:text="@string/timepicker_sure"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/timepicker_sure"
             android:textSize="16sp" />
 
     </RelativeLayout>
@@ -69,7 +69,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/timepicker_year"
-            android:textColor="@android:color/black"
+            android:textColor="@color/timepicker_time"
             android:textSize="18sp" />
 
         <vip.qsos.timepicker.DatePickerView
@@ -84,7 +84,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/timepicker_month"
-            android:textColor="@android:color/black"
+            android:textColor="@color/timepicker_time"
             android:textSize="18sp" />
 
         <vip.qsos.timepicker.DatePickerView
@@ -99,7 +99,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/timepicker_day"
-            android:textColor="@android:color/black"
+            android:textColor="@color/timepicker_time"
             android:textSize="18sp" />
 
         <vip.qsos.timepicker.DatePickerView
@@ -114,7 +114,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/timepicker_hour"
-            android:textColor="@android:color/black"
+            android:textColor="@color/timepicker_time"
             android:textSize="18sp" />
 
         <vip.qsos.timepicker.DatePickerView
@@ -129,7 +129,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/timepicker_minute"
-            android:textColor="@android:color/black"
+            android:textColor="@color/timepicker_time"
             android:textSize="18sp" />
     </LinearLayout>
 </LinearLayout>
