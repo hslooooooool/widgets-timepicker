@@ -66,36 +66,54 @@ class MainActivity : AppCompatActivity() {
                 val nowDay = mCalendar.get(Calendar.DAY_OF_MONTH)
 
                 when (p) {
+                    /**普通时间
+                    格式：年月日时分
+                    限制：当前时间上下【10年】*/
                     0 -> {
                         TimePickHelper.picker(
                             context = mContext, timeType = CustomDatePicker.Type.YMDHM,
                             onDateListener = onDateListener
                         )
                     }
+                    /**定制时间
+                    格式：年月日时
+                    限制：当前时间上下【10年】*/
                     1 -> {
                         TimePickHelper.picker(
                             context = mContext, timeType = CustomDatePicker.Type.YMDH,
                             onDateListener = onDateListener
                         )
                     }
+                    /**定制时间
+                    格式：年月日
+                    限制：当前时间上下【10年】*/
                     2 -> {
                         TimePickHelper.picker(
                             context = mContext, timeType = CustomDatePicker.Type.YMD,
                             onDateListener = onDateListener
                         )
                     }
+                    /**定制时间
+                    格式：年月
+                    限制：当前时间上下【10年】*/
                     3 -> {
                         TimePickHelper.picker(
                             context = mContext, timeType = CustomDatePicker.Type.YM,
                             onDateListener = onDateListener
                         )
                     }
+                    /**定制时间
+                    格式：年
+                    限制：当前时间上下【10年】*/
                     4 -> {
                         TimePickHelper.picker(
                             context = mContext, timeType = CustomDatePicker.Type.Y,
                             onDateListener = onDateListener
                         )
                     }
+                    /**定制时间
+                    格式：【今月】日时分
+                    限制：当前时间【今月】*/
                     5 -> {
                         mCalendar.set(nowYear, nowMonth, 0, 0, 0)
                         val limitDateStart = mCalendar.time
@@ -112,6 +130,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**定制时间
+                    格式：【今月】日时
+                    限制：当前时间【今月】*/
                     6 -> {
                         mCalendar.set(nowYear, nowMonth, 0, 0, 0)
                         val limitDateStart = mCalendar.time
@@ -129,6 +150,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**定制时间
+                    格式：【今日】时分
+                    限制：当前时间【今日】*/
                     7 -> {
                         mCalendar.set(nowYear, nowMonth, nowDay, 0, 0)
                         val limitDateStart = mCalendar.time
@@ -145,6 +169,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**限制时间
+                    格式：年月日时分
+                    限制：设定时间上下【1年】*/
                     8 -> {
                         mCalendar.set(2020, 2 - 1, 2, 2, 2)
                         val limitDate = mCalendar.time
@@ -164,6 +191,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**限制时间
+                    格式：年月日时分
+                    限制：当前时间上下【1年】*/
                     9 -> {
                         mCalendar.set(Calendar.YEAR, nowYear - 1)
                         val limitDateStart = mCalendar.time
@@ -179,6 +209,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**限制时间
+                    格式：年月日时分
+                    限制：设定时间上下【5年】*/
                     10 -> {
                         mCalendar.set(2020, 2 - 1, 2, 2, 2)
                         val limitDate = mCalendar.time
@@ -198,6 +231,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**限制时间
+                    格式：年月日时分
+                    限制：当前时间上下【5年】*/
                     11 -> {
                         mCalendar.set(Calendar.YEAR, nowYear - 5)
                         val limitDateStart = mCalendar.time
@@ -214,6 +250,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**限制时间
+                    格式：年月日时分
+                    限制：设定时间往前【5年】*/
                     12 -> {
                         mCalendar.set(2020, 2 - 1, 2, 2, 2)
                         val limitDate = mCalendar.time
@@ -230,6 +269,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**限制时间
+                    格式：年月日时分
+                    限制：当前时间往前【5年】*/
                     13 -> {
                         mCalendar.set(Calendar.YEAR, nowYear - 5)
                         val limitDateStart = mCalendar.time
@@ -243,6 +285,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**限制时间
+                    格式：年月日时分
+                    限制：设定时间往后【5年】*/
                     14 -> {
                         mCalendar.set(2020, 2 - 1, 2, 2, 2)
                         val limitDate = mCalendar.time
@@ -259,6 +304,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**限制时间
+                    格式：年月日时分
+                    限制：当前时间往后【5年】*/
                     15 -> {
                         mCalendar.set(Calendar.YEAR, nowYear + 5)
                         val limitDateEnd = mCalendar.time
@@ -272,6 +320,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**限制时间
+                    格式：年月日时分
+                    限制：设定时间往前【5年】，往后【1年】*/
                     16 -> {
                         mCalendar.set(2020, 2 - 1, 2, 2, 2)
                         val limitDate = mCalendar.time
@@ -289,6 +340,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**限制时间
+                    格式：年月日时分
+                    限制：当前时间往前【5年】，往后【1年】*/
                     17 -> {
                         mCalendar.set(Calendar.YEAR, nowYear - 5)
                         val limitDateStart = mCalendar.time
@@ -304,6 +358,9 @@ class MainActivity : AppCompatActivity() {
                             onDateListener = onDateListener
                         )
                     }
+                    /**错误时间
+                    格式：年月日时分
+                    错误：开始时间大于设定时间或结束时间小于设定时间*/
                     18 -> {
                         mCalendar.set(2020, 2 - 1, 2, 2, 2)
                         val limitDate = mCalendar.time
@@ -332,7 +389,7 @@ class MainActivity : AppCompatActivity() {
         override fun setDate(date: Date?) {
             date?.let {
                 timepicker_picked.text =
-                    DateUtils.format(date = it, timeType = DateUtils.TimeType.YMDHMS)
+                    DateUtils.format(date = it, timeType = DateUtils.TimeType.YMDHM)
             }
         }
     }

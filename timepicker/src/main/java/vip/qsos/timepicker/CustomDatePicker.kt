@@ -19,7 +19,15 @@ import java.util.*
  *
  * 时间选择控件,构建时间选择窗口
  * @param startDate 最小可选时间
- * @param endDate   最大可选时间
+ * @param endDate 最大可选时间
+ * @param selectDate 已选时间
+ * @param loop 是否滚动选择
+ * @param showYear 可选年
+ * @param showMonth 可选月
+ * @param showDay 可选天
+ * @param showHour 可选时
+ * @param showMinute 可选分
+ * @param onDateListener 选择结果回调
  */
 class CustomDatePicker constructor(
     private val context: Context,
@@ -77,8 +85,8 @@ class CustomDatePicker constructor(
 
     private lateinit var dialog: Dialog
 
-    private lateinit var tvCancel: TextView
-    private lateinit var tvSure: TextView
+    private lateinit var tCancel: TextView
+    private lateinit var tSure: TextView
 
     private lateinit var pYear: DatePickerView
     private lateinit var pMonth: DatePickerView
@@ -98,9 +106,7 @@ class CustomDatePicker constructor(
     private var listHour: ArrayList<String> = arrayListOf()
     private var listMinute: ArrayList<String> = arrayListOf()
 
-    private var selectedCalender = Calendar.getInstance()
-    private var startCalendar = Calendar.getInstance()
-    private var endCalendar = Calendar.getInstance()
+    private var mCalenderSelected = Calendar.getInstance()
 
     /**
      * @author : 华清松
@@ -282,8 +288,8 @@ class CustomDatePicker constructor(
         pHour = dialog.hour_pv
         pMinute = dialog.minute_pv
 
-        tvCancel = dialog.tv_cancel
-        tvSure = dialog.tv_select
+        tCancel = dialog.tv_cancel
+        tSure = dialog.tv_select
 
         tYear = dialog.timepicker_year_name
         tMonth = dialog.timepicker_month_name
@@ -297,19 +303,19 @@ class CustomDatePicker constructor(
         pHour.setIsLoop(loop)
         pMinute.setIsLoop(loop)
 
-        tvCancel.setOnClickListener {
+        tCancel.setOnClickListener {
             hasSelected = false
             dialog.dismiss()
         }
 
-        tvSure.setOnClickListener {
+        tSure.setOnClickListener {
             hasSelected = true
             dialog.dismiss()
         }
 
         dialog.setOnDismissListener {
             if (hasSelected) {
-                onDateListener.setDate(selectedCalender.time)
+                onDateListener.setDate(mCalenderSelected.time)
             } else {
                 onDateListener.setDate(null)
             }
@@ -317,36 +323,36 @@ class CustomDatePicker constructor(
 
         pYear.setOnSelectListener(object : DatePickerView.OnSelectListener {
             override fun onSelect(text: String) {
-                selectedCalender.set(Calendar.YEAR, Integer.parseInt(text))
+                mCalenderSelected.set(Calendar.YEAR, Integer.parseInt(text))
                 changeMonth()
             }
         })
 
         pMonth.setOnSelectListener(object : DatePickerView.OnSelectListener {
             override fun onSelect(text: String) {
-                selectedCalender.set(Calendar.DAY_OF_MONTH, 1)
-                selectedCalender.set(Calendar.MONTH, Integer.parseInt(text) - 1)
+                mCalenderSelected.set(Calendar.DAY_OF_MONTH, 1)
+                mCalenderSelected.set(Calendar.MONTH, Integer.parseInt(text) - 1)
                 changeDay()
             }
         })
 
         pDay.setOnSelectListener(object : DatePickerView.OnSelectListener {
             override fun onSelect(text: String) {
-                selectedCalender.set(Calendar.DAY_OF_MONTH, Integer.parseInt(text))
+                mCalenderSelected.set(Calendar.DAY_OF_MONTH, Integer.parseInt(text))
                 changeHour()
             }
         })
 
         pHour.setOnSelectListener(object : DatePickerView.OnSelectListener {
             override fun onSelect(text: String) {
-                selectedCalender.set(Calendar.HOUR_OF_DAY, Integer.parseInt(text))
+                mCalenderSelected.set(Calendar.HOUR_OF_DAY, Integer.parseInt(text))
                 changeMinute()
             }
         })
 
         pMinute.setOnSelectListener(object : DatePickerView.OnSelectListener {
             override fun onSelect(text: String) {
-                selectedCalender.set(Calendar.MINUTE, Integer.parseInt(text))
+                mCalenderSelected.set(Calendar.MINUTE, Integer.parseInt(text))
             }
         })
     }
@@ -360,20 +366,20 @@ class CustomDatePicker constructor(
         listHour.clear()
         listMinute.clear()
 
-        startCalendar.time = startDate
-        endCalendar.time = endDate
+        val mCalender = Calendar.getInstance()
+        mCalender.time = startDate
+        startYear = mCalender.get(Calendar.YEAR)
+        startMonth = mCalender.get(Calendar.MONTH) + 1
+        startDay = mCalender.get(Calendar.DAY_OF_MONTH)
+        startHour = mCalender.get(Calendar.HOUR_OF_DAY)
+        startMinute = mCalender.get(Calendar.MINUTE)
 
-        startYear = startCalendar.get(Calendar.YEAR)
-        startMonth = startCalendar.get(Calendar.MONTH) + 1
-        startDay = startCalendar.get(Calendar.DAY_OF_MONTH)
-        startHour = startCalendar.get(Calendar.HOUR_OF_DAY)
-        startMinute = startCalendar.get(Calendar.MINUTE)
-
-        endYear = endCalendar.get(Calendar.YEAR)
-        endMonth = endCalendar.get(Calendar.MONTH) + 1
-        endDay = endCalendar.get(Calendar.DAY_OF_MONTH)
-        endHour = endCalendar.get(Calendar.HOUR_OF_DAY)
-        endMinute = endCalendar.get(Calendar.MINUTE)
+        mCalender.time = endDate
+        endYear = mCalender.get(Calendar.YEAR)
+        endMonth = mCalender.get(Calendar.MONTH) + 1
+        endDay = mCalender.get(Calendar.DAY_OF_MONTH)
+        endHour = mCalender.get(Calendar.HOUR_OF_DAY)
+        endMinute = mCalender.get(Calendar.MINUTE)
 
         initYearData()
         initMonthData()
@@ -385,13 +391,13 @@ class CustomDatePicker constructor(
 
     /**初始化已选时间*/
     private fun initSelected() {
-        selectedCalender.time = selectDate
+        mCalenderSelected.time = selectDate
 
-        val selectedYear = selectedCalender.get(Calendar.YEAR)
-        val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
-        val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
-        val selectedHour = selectedCalender.get(Calendar.HOUR_OF_DAY)
-        val selectedMinute = selectedCalender.get(Calendar.MINUTE)
+        val selectedYear = mCalenderSelected.get(Calendar.YEAR)
+        val selectedMonth = mCalenderSelected.get(Calendar.MONTH) + 1
+        val selectedDay = mCalenderSelected.get(Calendar.DAY_OF_MONTH)
+        val selectedHour = mCalenderSelected.get(Calendar.HOUR_OF_DAY)
+        val selectedMinute = mCalenderSelected.get(Calendar.MINUTE)
 
         tYear.visibility = if (showYear) View.VISIBLE else View.GONE
         pYear.visibility = if (showYear) View.VISIBLE else View.GONE
@@ -432,7 +438,7 @@ class CustomDatePicker constructor(
     /**初始化月份数据*/
     private fun initMonthData() {
         listMonth.clear()
-        val year = selectedCalender.get(Calendar.YEAR)
+        val year = mCalenderSelected.get(Calendar.YEAR)
         when {
             startDate == endDate -> {
                 listMonth.add(formatTimeUnit(startMonth))
@@ -454,7 +460,7 @@ class CustomDatePicker constructor(
     private fun changeMonth() {
         initMonthData()
         pMonth.setSelected(0)
-        selectedCalender.set(Calendar.MONTH, Integer.parseInt(listMonth[0]) - 1)
+        mCalenderSelected.set(Calendar.MONTH, Integer.parseInt(listMonth[0]) - 1)
         executeAnimator(pMonth)
         pMonth.postDelayed({ changeDay() }, 100)
     }
@@ -462,15 +468,15 @@ class CustomDatePicker constructor(
     /**初始化日数据*/
     private fun initDayData() {
         listDay.clear()
-        val selectedYear = selectedCalender.get(Calendar.YEAR)
-        val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
+        val selectedYear = mCalenderSelected.get(Calendar.YEAR)
+        val selectedMonth = mCalenderSelected.get(Calendar.MONTH) + 1
 
         when {
             startDate == endDate -> {
                 listDay.add(formatTimeUnit(startDay))
             }
             selectedYear == startYear && selectedMonth == startMonth -> {
-                for (i in startDay..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                for (i in startDay..mCalenderSelected.getActualMaximum(Calendar.DAY_OF_MONTH)) {
                     listDay.add(formatTimeUnit(i))
                 }
             }
@@ -480,7 +486,7 @@ class CustomDatePicker constructor(
                 }
             }
             else -> {
-                for (i in 1..selectedCalender.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                for (i in 1..mCalenderSelected.getActualMaximum(Calendar.DAY_OF_MONTH)) {
                     listDay.add(formatTimeUnit(i))
                 }
             }
@@ -491,7 +497,7 @@ class CustomDatePicker constructor(
     /**修改日数据*/
     private fun changeDay() {
         initDayData()
-        selectedCalender.set(Calendar.DAY_OF_MONTH, Integer.parseInt(listDay[0]))
+        mCalenderSelected.set(Calendar.DAY_OF_MONTH, Integer.parseInt(listDay[0]))
         pDay.setSelected(0)
         executeAnimator(pDay)
         pDay.postDelayed({ changeHour() }, 100)
@@ -500,9 +506,9 @@ class CustomDatePicker constructor(
     /**初始化小时数据*/
     private fun initHourData() {
         listHour.clear()
-        val selectedYear = selectedCalender.get(Calendar.YEAR)
-        val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
-        val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
+        val selectedYear = mCalenderSelected.get(Calendar.YEAR)
+        val selectedMonth = mCalenderSelected.get(Calendar.MONTH) + 1
+        val selectedDay = mCalenderSelected.get(Calendar.DAY_OF_MONTH)
         when {
             startDate == endDate -> {
                 listHour.add(formatTimeUnit(startHour))
@@ -529,7 +535,7 @@ class CustomDatePicker constructor(
     /**修改小时数据*/
     private fun changeHour() {
         initHourData()
-        selectedCalender.set(Calendar.HOUR_OF_DAY, Integer.parseInt(listHour[0]))
+        mCalenderSelected.set(Calendar.HOUR_OF_DAY, Integer.parseInt(listHour[0]))
         pHour.setSelected(0)
         executeAnimator(pHour)
 
@@ -539,10 +545,10 @@ class CustomDatePicker constructor(
     /**初始化分钟数据*/
     private fun initMinuteData() {
         listMinute.clear()
-        val selectedYear = selectedCalender.get(Calendar.YEAR)
-        val selectedMonth = selectedCalender.get(Calendar.MONTH) + 1
-        val selectedDay = selectedCalender.get(Calendar.DAY_OF_MONTH)
-        val selectedHour = selectedCalender.get(Calendar.HOUR_OF_DAY)
+        val selectedYear = mCalenderSelected.get(Calendar.YEAR)
+        val selectedMonth = mCalenderSelected.get(Calendar.MONTH) + 1
+        val selectedDay = mCalenderSelected.get(Calendar.DAY_OF_MONTH)
+        val selectedHour = mCalenderSelected.get(Calendar.HOUR_OF_DAY)
         when {
             startDate == endDate -> {
                 listMinute.add(formatTimeUnit(startMinute))
@@ -570,7 +576,7 @@ class CustomDatePicker constructor(
     private fun changeMinute() {
         if (showMinute) {
             initMinuteData()
-            selectedCalender.set(Calendar.MINUTE, Integer.parseInt(listMinute[0]))
+            mCalenderSelected.set(Calendar.MINUTE, Integer.parseInt(listMinute[0]))
             pMinute.setSelected(0)
             executeAnimator(pMinute)
         }
