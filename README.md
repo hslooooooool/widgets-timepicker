@@ -1,5 +1,4 @@
-# qsos-timepicker
-安卓时间选择器
+# 安卓时间选择器
 
 [![image](https://jitpack.io/v/hslooooooool/qsos-timepicker.svg)](https://jitpack.io/#hslooooooool/qsos-timepicker)
 
